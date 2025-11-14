@@ -1,0 +1,28 @@
+body {
+  margin: 20px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+}
+
+li form {
+  margin: 0;
+  padding: 0;
+}
+
+li button {
+  margin-right: 6px;
+}
+
+.add-form {
+  margin-bottom: 12px;
+}
