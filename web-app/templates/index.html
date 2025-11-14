@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <form method="POST" class="add-form">
+      <input type="text" name="text" />
+      <button>Add</button>
+    </form>
+    <ul>
+      {% for entry in entries %}
+      <li>
+        <form method="POST" action="{{ url_for('delete') }}">
+          <input type="hidden" name="id" value="{{ entry.id }}" />
+          <button>x</button>
+        </form>
+        <span>{{ entry.text }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
