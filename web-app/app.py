@@ -33,7 +33,6 @@ def create_app():
             {"id": str(entry["_id"]), "text": entry["text"]}
             for entry in db["test"].find()
         ]
-
         return render_template("index.html", entries=entries)
 
     @app.route("/delete", methods=["POST"])
