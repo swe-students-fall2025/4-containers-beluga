@@ -29,9 +29,9 @@ Get into python bash, import analyze_image function, then call it by using any p
 ```bash
 cd machine-learning-client
 pipenv --python 3.10
-pipenv install mediapipe opencv-python
+pipenv install -d
 pipenv shell
-
+```
 python
 from gesture_api import analyze_image
 print(analyze_image("picture_name.jpg"))

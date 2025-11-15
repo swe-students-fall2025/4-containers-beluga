@@ -7,8 +7,14 @@ name = "pypi"
 pymongo = "*"
 mediapipe = "*"
 opencv-python = "*"
+pylint = "*"
+python-dotenv = "*"
+black = "*"
+
 
 [dev-packages]
+pytest = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.10"
