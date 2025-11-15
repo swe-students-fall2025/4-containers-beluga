@@ -10,6 +10,9 @@ pymongo = "*"
 python-dotenv = "*"
 mediapipe = "*"
 opencv-python = "*"
+pylint = "*"
+python-dotenv = "*"
+
 
 
 [dev-packages]

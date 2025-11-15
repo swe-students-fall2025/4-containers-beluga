@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+    "W0718",  # broad-exception-caught
+    "W0511",  # fixme
+]
+
