@@ -1,6 +1,8 @@
 """Gesture model module."""
-
-import mediapipe as mp
+try:
+    import mediapipe as mp
+except ImportError: 
+    mp = None
 
 
 class GestureModel:
