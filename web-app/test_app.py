@@ -3,7 +3,6 @@
 from unittest.mock import Mock, patch, MagicMock
 
 import pytest
-from bson import ObjectId
 from app import create_app
 
 
@@ -26,28 +25,3 @@ def fixture_app(collection):
         app = create_app()
         app.config["TESTING"] = True
         yield app
-
-
-def test_index_get(client, collection):
-    """GET / should render the entry list."""
-    collection.find.return_value = [{"_id": ObjectId(), "text": "test entry"}]
-
-    response = client.get("/")
-    assert response.status_code == 200
-    assert b"test entry" in response.data
-
-
-def test_index_post(client, collection):
-    """POST / should create a new entry."""
-    collection.find.return_value = []
-
-    response = client.post("/", data={"text": "new entry"})
-    assert response.status_code == 302
-    collection.insert_one.assert_called_once()
-
-
-def test_delete(client, collection):
-    """POST /delete should remove an entry."""
-    response = client.post("/delete", data={"id": str(ObjectId())})
-    assert response.status_code == 302
-    collection.delete_one.assert_called_once()

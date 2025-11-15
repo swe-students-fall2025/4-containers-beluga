@@ -63,7 +63,7 @@ def create_app():
                 image_data = image_data.split(",", 1)[1]
 
             # Decode base64 image
-            image_bytes = base64.b64decode(image_data)
+            _image_bytes = base64.b64decode(image_data)
 
             # TODO: Send image to ML client for processing
             # For now, return a placeholder response
