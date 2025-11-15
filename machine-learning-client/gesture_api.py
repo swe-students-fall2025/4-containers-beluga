@@ -10,10 +10,8 @@ def analyze_image(image_path):
     image = cv2.imread(image_path)
     if image is None:
         raise FileNotFoundError(f"Image not found: {image_path}")
-
     img_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = mp_hands.process(img_rgb)
-
     if not results.multi_hand_landmarks:
         return {"gesture": "no hand detected", "score": 0.0}
 
