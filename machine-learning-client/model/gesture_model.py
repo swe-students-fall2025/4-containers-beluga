@@ -16,4 +16,4 @@ class GestureModel:
 
     def dummy(self):
         """Dummy method for pylint."""
-        pass
+        return None
