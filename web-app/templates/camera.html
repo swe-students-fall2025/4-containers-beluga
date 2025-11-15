@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Camera - Beluga</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Global styles -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <!-- Camera-specific styles -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='camera.css') }}"
+    />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="container">
+        <div class="nav-brand">Beluga</div>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/camera">Camera</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section class="camera-container">
+      <div class="container">
+        <h1 class="camera-title">Take a Photo</h1>
+
+        <!-- Frame area: shows either live video OR captured photo -->
+        <div class="camera-frame">
+          <video
+            id="video"
+            class="camera-video"
+            autoplay
+            playsinline
+          ></video>
+
+          <img
+            id="previewImage"
+            class="camera-preview hidden"
+            alt="Captured photo"
+          />
+        </div>
+
+        <!-- Hidden canvas used only for grabbing a frame -->
+        <canvas
+          id="canvas"
+          class="camera-canvas"
+          width="480"
+          height="360"
+        ></canvas>
+
+        <!-- Button row: changes after capture -->
+        <div class="camera-buttons">
+          <button id="captureBtn" class="btn btn-primary">
+            Take Photo
+          </button>
+
+          <button
+            id="retakeBtn"
+            class="btn btn-secondary hidden"
+          >
+            Discard &amp; Retake
+          </button>
+
+          <button
+            id="sendBtn"
+            class="btn btn-primary hidden"
+          >
+            Send to Whiteboard
+          </button>
+        </div>
+
+        <!-- Status / result text -->
+        <div id="result" class="camera-result"></div>
+      </div>
+    </section>
+
+    <script>
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const captureBtn = document.getElementById('captureBtn');
+      const sendBtn = document.getElementById('sendBtn');
+      const retakeBtn = document.getElementById('retakeBtn');
+      const resultDiv = document.getElementById('result');
+      const previewImage = document.getElementById('previewImage');
+
+      let lastCaptureDataUrl = null;
+
+      async function initCamera() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          video.srcObject = stream;
+        } catch (err) {
+          console.error('Error accessing camera:', err);
+          resultDiv.textContent = 'Could not access camera.';
+        }
+      }
+
+      // 1) Take photo: freeze frame and switch view to the captured image
+      function capturePhoto() {
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = video.videoWidth || 480;
+        canvas.height = video.videoHeight || 360;
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const dataUrl = canvas.toDataURL('image/png');
+        lastCaptureDataUrl = dataUrl;
+
+        // Hide live video, show captured image instead
+        video.classList.add('hidden');
+        previewImage.src = dataUrl;
+        previewImage.classList.remove('hidden');
+
+        // Update buttons
+        captureBtn.classList.add('hidden');
+        retakeBtn.classList.remove('hidden');
+        sendBtn.classList.remove('hidden');
+
+        resultDiv.textContent =
+          'Photo captured. You can now send it to the whiteboard or retake.';
+      }
+
+      // 2) Discard and go back to live video
+      function retakePhoto() {
+        lastCaptureDataUrl = null;
+
+        // Show live video again, hide preview
+        previewImage.classList.add('hidden');
+        previewImage.src = '';
+        video.classList.remove('hidden');
+
+        // Switch buttons back
+        captureBtn.classList.remove('hidden');
+        retakeBtn.classList.add('hidden');
+        sendBtn.classList.add('hidden');
+
+        resultDiv.textContent = 'Photo discarded. Take a new photo.';
+      }
+
+      // 3) Send captured image to backend (/analyze)
+      async function sendToWhiteboard() {
+        if (!lastCaptureDataUrl) {
+          resultDiv.textContent = 'Please take a photo first.';
+          return;
+        }
+
+        resultDiv.textContent = 'Sending to server...';
+
+        try {
+          const response = await fetch('{{ url_for("analyze") }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image: lastCaptureDataUrl }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            resultDiv.textContent = 'Error: ' + (data.error || 'Unknown error');
+            return;
+          }
+
+          resultDiv.textContent =
+            `Sent! Result: ${data.emoji} (${data.label}, confidence: ${data.confidence})`;
+        } catch (err) {
+          console.error(err);
+          resultDiv.textContent = 'Error contacting server.';
+        }
+      }
+
+      captureBtn.addEventListener('click', capturePhoto);
+      retakeBtn.addEventListener('click', retakePhoto);
+      sendBtn.addEventListener('click', sendToWhiteboard);
+
+      initCamera();
+    </script>
+  </body>
+</html>
