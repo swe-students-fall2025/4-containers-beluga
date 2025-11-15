@@ -1,49 +1,58 @@
-"""Main entry point for machine learning client."""
+"""Main entry point for the gesture recognition ML client."""
 
 import os
-
+import time
 from pymongo import MongoClient
 from dotenv import load_dotenv
+
+from gesture_api import analyze_image
+from mapping import map_gesture
 
 load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 DB_NAME = os.getenv("DB_NAME", "testdb")
+COLLECTION_NAME = "gestures"
 
 
 def main():
-    """Main execution loop for the ML client."""
-    print("Starting ML client...\n")
+    """Continuously reads an image, runs gesture recognition, and writes result to MongoDB."""
+    print("Starting Gesture ML client...\n")
 
     client = MongoClient(MONGO_URI)
     db = client[DB_NAME]
+    collection = db[COLLECTION_NAME]
+
+    # Test connection
     client.admin.command("ping")
+    print("Connected to MongoDB.")
 
-    collection = db["test"]
-    existing_entries = list(collection.find())
-    for entry in existing_entries:
-        print(entry["text"])
+    while True:
+        # Later: load the latest uploaded image from web app.
+        # For now: run on a sample placeholder image.
+        image_path = "sample_thumbs_up_01.jpg"
 
-    # Track text values by _id for deletions
-    text_by_id = {str(entry["_id"]): entry["text"] for entry in existing_entries}
+        result = analyze_image(image_path)
+        gesture = result["gesture"]
+        score = result["score"]
 
-    try:
-        with collection.watch() as stream:
-            for change in stream:
-                if change["operationType"] == "insert":
-                    document = change["fullDocument"]
-                    doc_id = str(document["_id"])
-                    text = document["text"]
-                    text_by_id[doc_id] = text
-                    print(f"Add: {text}")
-                elif change["operationType"] == "delete":
-                    doc_id = str(change["documentKey"]["_id"])
-                    text = text_by_id[doc_id]
-                    del text_by_id[doc_id]
-                    print(f"Remove: {text}")
-    except KeyboardInterrupt:
-        pass
+        mood, emoji = map_gesture(gesture)
+
+        print(f"Detected: {gesture} ({emoji}), score={score}")
+
+        collection.insert_one(
+            {
+                "gesture": gesture,
+                "score": score,
+                "mood": mood,
+                "emoji": emoji,
+                "timestamp": time.time(),
+            }
+        )
+
+        # Avoid spamming DB every second — simulate periodic check-in
+        time.sleep(3)
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     main()

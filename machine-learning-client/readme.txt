@@ -22,6 +22,9 @@ The model outputs 21 hand landmarks, and lightweight rule-based logic classifies
 ## 📦 Setup (Pipenv)
 
 Requires **Python 3.10**
+Need to download python 3.10 and set the python version of virtual environment to 3.10
+install mediapipe and opencv, then start virtual environment.
+Get into python bash, import analyze_image function, then call it by using any picture you wanna test.
 
 ```bash
 cd machine-learning-client
