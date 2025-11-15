@@ -68,11 +68,7 @@ def create_app():
 
             # TODO: Send image to ML client for processing
             # For now, store the image in DB and return a placeholder response
-            # In the future, this should:
-            # 1. Send image to ML client (via HTTP API or message queue)
-            # 2. ML client processes and returns label, confidence, emoji
-            # 3. Store result in DB
-            # 4. Return result to frontend
+        
 
             # Store image in database with timestamp
             document = {
