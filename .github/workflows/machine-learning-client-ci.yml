@@ -1,0 +1,33 @@
+name: Machine Learning Client CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'machine-learning-client/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'machine-learning-client/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          cd machine-learning-client
+          python -m pip install --upgrade pip
+          python -m pip install pipenv
+          pipenv sync --dev --python $(which python)
+          pipenv shell --fancy --python $(which python)
+      - name: Run tests with coverage
+        run: |
+          cd machine-learning-client
+          pipenv run pytest --cov=. --cov-report=term --cov-fail-under=80
+
