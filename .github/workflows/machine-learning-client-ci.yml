@@ -4,11 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - 'machine-learning-client/**'
+      - "machine-learning-client/**"
   pull_request:
     branches: [main]
     paths:
-      - 'machine-learning-client/**'
+      - "machine-learning-client/**"
 
 jobs:
   build-and-test:
@@ -23,11 +23,10 @@ jobs:
         run: |
           cd machine-learning-client
           python -m pip install --upgrade pip
-          python -m pip install pipenv
-          pipenv sync --dev --python $(which python)
-          pipenv shell --fancy --python $(which python)
+          pip install pipenv
+          pipenv --python 3.10
+          pipenv install --dev
       - name: Run tests with coverage
         run: |
           cd machine-learning-client
           pipenv run pytest --cov=. --cov-report=term --cov-fail-under=80
-
