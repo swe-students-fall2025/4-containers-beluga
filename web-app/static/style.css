@@ -12,8 +12,8 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   line-height: 1.6;
-  color: #333;
-  background-color: #f5f5f5;
+  color: #2c3e50;
+  background-color: #ffffff;
 }
 
 .container {
@@ -24,13 +24,13 @@ body {
 
 /* Navigation */
 .navbar {
-  background-color: #2c3e50;
+  background-color: #4a90e2;
   color: white;
   padding: 1rem 0;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e6f3ff;
 }
 
 .navbar .container {
@@ -41,8 +41,9 @@ body {
 
 .nav-brand {
   font-size: 1.5rem;
-  font-weight: bold;
-  color: #3498db;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.5px;
 }
 
 .nav-links {
@@ -54,18 +55,18 @@ body {
 .nav-links a {
   color: white;
   text-decoration: none;
-  transition: color 0.3s;
+  transition: opacity 0.2s;
 }
 
 .nav-links a:hover {
-  color: #3498db;
+  opacity: 0.8;
 }
 
 /* Hero Section */
 .hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 6rem 0;
+  background: linear-gradient(to bottom, #e6f3ff 0%, #b3d9ff 100%);
+  color: #2c3e50;
+  padding: 8rem 0;
   text-align: center;
 }
 
@@ -75,15 +76,16 @@ body {
 }
 
 .hero-title {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  font-weight: 700;
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
 }
 
 .hero-subtitle {
   font-size: 1.25rem;
-  margin-bottom: 2rem;
-  opacity: 0.95;
+  margin-bottom: 2.5rem;
+  color: #5a6c7d;
 }
 
 .hero-buttons {
@@ -97,35 +99,32 @@ body {
 .btn {
   display: inline-block;
   padding: 0.75rem 2rem;
-  border-radius: 5px;
+  border-radius: 6px;
   text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s;
+  font-weight: 500;
+  transition: all 0.2s;
   border: none;
   cursor: pointer;
   font-size: 1rem;
 }
 
 .btn-primary {
-  background-color: #3498db;
+  background-color: #4a90e2;
   color: white;
 }
 
 .btn-primary:hover {
-  background-color: #2980b9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #3a7bc8;
 }
 
 .btn-secondary {
-  background-color: transparent;
-  color: white;
-  border: 2px solid white;
+  background-color: white;
+  color: #4a90e2;
+  border: 1px solid #4a90e2;
 }
 
 .btn-secondary:hover {
-  background-color: white;
-  color: #667eea;
+  background-color: #f0f8ff;
 }
 
 /* Sections */
@@ -134,16 +133,17 @@ section {
 }
 
 .section-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   text-align: center;
   margin-bottom: 1rem;
   color: #2c3e50;
+  font-weight: 600;
 }
 
 .section-subtitle {
   text-align: center;
-  font-size: 1.1rem;
-  color: #7f8c8d;
+  font-size: 1rem;
+  color: #5a6c7d;
   margin-bottom: 3rem;
 }
 
@@ -160,17 +160,16 @@ section {
 }
 
 .feature-card {
-  background-color: #f8f9fa;
+  background-color: white;
   padding: 2rem;
-  border-radius: 10px;
+  border-radius: 8px;
   text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
-  border: 1px solid #e9ecef;
+  transition: background-color 0.2s;
+  border: 1px solid #e6f3ff;
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  background-color: #f0f8ff;
 }
 
 .feature-icon {
@@ -179,19 +178,20 @@ section {
 }
 
 .feature-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   margin-bottom: 0.5rem;
   color: #2c3e50;
+  font-weight: 600;
 }
 
 .feature-description {
-  color: #7f8c8d;
+  color: #5a6c7d;
   line-height: 1.6;
 }
 
 /* About Section */
 .about {
-  background-color: #f8f9fa;
+  background-color: #f0f8ff;
 }
 
 .about-content {
@@ -200,10 +200,10 @@ section {
 }
 
 .about-description {
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin-bottom: 1.5rem;
-  color: #555;
-  line-height: 1.8;
+  color: #2c3e50;
+  line-height: 1.7;
 }
 
 .about-features {
@@ -213,8 +213,8 @@ section {
 
 .about-features li {
   padding: 0.5rem 0;
-  font-size: 1.1rem;
-  color: #555;
+  font-size: 1rem;
+  color: #2c3e50;
 }
 
 /* Dashboard Section */
@@ -238,22 +238,24 @@ section {
   flex: 1;
   min-width: 200px;
   padding: 0.75rem;
-  border: 2px solid #ddd;
-  border-radius: 5px;
+  border: 1px solid #b3d9ff;
+  border-radius: 6px;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  transition: border-color 0.2s;
+  background-color: white;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: #4a90e2;
 }
 
 .entries-list {
-  background-color: #f8f9fa;
+  background-color: #f0f8ff;
   padding: 2rem;
-  border-radius: 10px;
+  border-radius: 8px;
   margin-top: 2rem;
+  border: 1px solid #e6f3ff;
 }
 
 .entries-list h3 {
@@ -272,13 +274,13 @@ section {
   padding: 1rem;
   background-color: white;
   margin-bottom: 0.5rem;
-  border-radius: 5px;
-  border: 1px solid #e9ecef;
-  transition: box-shadow 0.3s;
+  border-radius: 6px;
+  border: 1px solid #e6f3ff;
+  transition: background-color 0.2s;
 }
 
 .entry-item:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #f0f8ff;
 }
 
 .entry-text {
@@ -292,7 +294,7 @@ section {
 }
 
 .btn-delete {
-  background-color: #e74c3c;
+  background-color: #ff6b6b;
   color: white;
   border: none;
   border-radius: 50%;
@@ -303,43 +305,42 @@ section {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
 }
 
 .btn-delete:hover {
-  background-color: #c0392b;
+  background-color: #ff5252;
 }
 
 .empty-state {
   text-align: center;
   padding: 3rem;
-  color: #7f8c8d;
-  font-size: 1.1rem;
+  color: #5a6c7d;
+  font-size: 1rem;
 }
 
 /* Footer */
 .footer {
-  background-color: #2c3e50;
+  background-color: #4a90e2;
   color: white;
   text-align: center;
-  padding: 1rem 0;
+  padding: 1.5rem 0;
   margin-top: 3rem;
-}
-
-.footer p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #bdc3c7;
+  border-top: 1px solid #e6f3ff;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .hero {
+    padding: 5rem 0;
+  }
+
   .hero-title {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 
   .hero-subtitle {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 
   .section-title {
