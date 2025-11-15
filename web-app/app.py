@@ -1,8 +1,10 @@
 """Main entry point for Flask web app."""
 
+import base64
 import os
+from datetime import datetime
 
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, jsonify, request, redirect, url_for, render_template
 from pymongo import MongoClient
 from bson import ObjectId
 from dotenv import load_dotenv
@@ -41,6 +43,53 @@ def create_app():
         if entry_id := request.form.get("id", ""):
             db["test"].delete_one({"_id": ObjectId(entry_id)})
         return redirect(url_for("index"))
+
+    @app.route("/analyze", methods=["POST"])
+    def analyze():
+        """Analyze an image using the ML client."""
+        try:
+            data = request.get_json()
+            if not data or "image" not in data:
+                return jsonify({"error": "No image provided"}), 400
+
+            # Extract base64 image data
+            image_data = data["image"]
+            if image_data.startswith("data:image"):
+                # Remove data URL prefix (e.g., "data:image/jpeg;base64,")
+                image_data = image_data.split(",", 1)[1]
+
+            # Decode base64 image
+            image_bytes = base64.b64decode(image_data)
+
+            # TODO: Send image to ML client for processing
+            # For now, store the image in DB and return a placeholder response
+            # In the future, this should:
+            # 1. Send image to ML client (via HTTP API or message queue)
+            # 2. ML client processes and returns label, confidence, emoji
+            # 3. Store result in DB
+            # 4. Return result to frontend
+
+            # Store image in database with timestamp
+            document = {
+                "image_data": image_bytes,
+                "timestamp": datetime.utcnow(),
+                "status": "pending",
+            }
+            result = db["images"].insert_one(document)
+
+            # Placeholder response - replace with actual ML client integration
+            response_data = {
+                "id": str(result.inserted_id),
+                "label": "thumbs_up",  # Placeholder
+                "confidence": 0.95,  # Placeholder
+                "emoji": "👍",  # Placeholder
+                "message": "Image received. ML processing not yet integrated.",
+            }
+
+            return jsonify(response_data), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
     return app
 

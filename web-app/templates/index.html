@@ -16,6 +16,7 @@
         <div class="nav-brand">Beluga</div>
         <ul class="nav-links">
           <li><a href="#home">Home</a></li>
+          <li><a href="#camera">Camera</a></li>
           <li><a href="#features">Features</a></li>
           <li><a href="#about">About</a></li>
         </ul>
@@ -33,6 +34,42 @@
           </p>
           <div class="hero-buttons">
             <a href="#features" class="btn btn-primary">Learn More</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Camera Section -->
+    <section id="camera" class="camera-section">
+      <div class="container">
+        <h2 class="section-title">Capture Gesture</h2>
+        <p class="section-subtitle">
+          Use your camera to capture hand gestures for recognition
+        </p>
+        <div class="camera-container">
+          <div class="camera-wrapper">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas" style="display: none;"></canvas>
+            <div class="camera-controls">
+              <button id="startCamera" class="btn btn-primary">
+                Start Camera
+              </button>
+              <button id="capturePhoto" class="btn btn-primary" style="display: none;">
+                Capture Photo
+              </button>
+              <button id="stopCamera" class="btn btn-secondary" style="display: none;">
+                Stop Camera
+              </button>
+            </div>
+            <div id="capturedImage" class="captured-image" style="display: none;">
+              <h3>Captured Image:</h3>
+              <img id="preview" alt="Captured image" />
+              <div class="upload-controls">
+                <button id="sendToML" class="btn btn-primary">Send for Analysis</button>
+                <button id="discard" class="btn btn-secondary">Discard</button>
+              </div>
+              <div id="result" class="analysis-result" style="display: none;"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -125,5 +162,107 @@
         <p>Beluga</p>
       </div>
     </footer>
+
+    <script>
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      const startCameraBtn = document.getElementById("startCamera");
+      const capturePhotoBtn = document.getElementById("capturePhoto");
+      const stopCameraBtn = document.getElementById("stopCamera");
+      const capturedImageDiv = document.getElementById("capturedImage");
+      const preview = document.getElementById("preview");
+      const sendToMLBtn = document.getElementById("sendToML");
+      const discardBtn = document.getElementById("discard");
+      const resultDiv = document.getElementById("result");
+      let stream = null;
+
+      // Start camera
+      startCameraBtn.addEventListener("click", async () => {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user" },
+          });
+          video.srcObject = stream;
+          startCameraBtn.style.display = "none";
+          capturePhotoBtn.style.display = "inline-block";
+          stopCameraBtn.style.display = "inline-block";
+        } catch (err) {
+          console.error("Error accessing camera:", err);
+          alert("Could not access camera. Please ensure permissions are granted.");
+        }
+      });
+
+      // Stop camera
+      stopCameraBtn.addEventListener("click", () => {
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop());
+          stream = null;
+        }
+        video.srcObject = null;
+        startCameraBtn.style.display = "inline-block";
+        capturePhotoBtn.style.display = "none";
+        stopCameraBtn.style.display = "none";
+        capturedImageDiv.style.display = "none";
+      });
+
+      // Capture photo
+      capturePhotoBtn.addEventListener("click", () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0);
+        const imageData = canvas.toDataURL("image/jpeg");
+        preview.src = imageData;
+        capturedImageDiv.style.display = "block";
+        resultDiv.style.display = "none";
+      });
+
+      // Discard captured image
+      discardBtn.addEventListener("click", () => {
+        capturedImageDiv.style.display = "none";
+        resultDiv.style.display = "none";
+      });
+
+      // Send to ML client
+      sendToMLBtn.addEventListener("click", async () => {
+        const imageData = canvas.toDataURL("image/jpeg");
+        sendToMLBtn.disabled = true;
+        sendToMLBtn.textContent = "Processing...";
+
+        try {
+          const response = await fetch("/analyze", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ image: imageData }),
+          });
+
+          const result = await response.json();
+          
+          if (response.ok) {
+            resultDiv.style.display = "block";
+            let resultHTML = `
+              <h4>Analysis Result:</h4>
+              <p><strong>Label:</strong> ${result.label}</p>
+              <p><strong>Confidence:</strong> ${(result.confidence * 100).toFixed(2)}%</p>
+              <p><strong>Emoji:</strong> ${result.emoji || "N/A"}</p>
+            `;
+            if (result.message) {
+              resultHTML += `<p class="info-message"><em>${result.message}</em></p>`;
+            }
+            resultDiv.innerHTML = resultHTML;
+          } else {
+            throw new Error(result.error || "Analysis failed");
+          }
+        } catch (error) {
+          console.error("Error sending image:", error);
+          alert("Error analyzing image: " + error.message);
+        } finally {
+          sendToMLBtn.disabled = false;
+          sendToMLBtn.textContent = "Send for Analysis";
+        }
+      });
+    </script>
   </body>
 </html>
