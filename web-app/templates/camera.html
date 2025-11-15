@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Camera - Beluga</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Global styles -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <!-- Camera-specific styles -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='camera.css') }}"
+    />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="container">
+        <div class="nav-brand">Beluga</div>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/camera">Camera</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section class="camera-container">
+      <div class="container">
+        <h1 class="camera-title">Take a Photo</h1>
+
+        <!-- Live camera preview -->
+        <video
+          id="video"
+          class="camera-video"
+          autoplay
+          playsinline
+          width="480"
+          height="360"
+        ></video>
+
+        <!-- Hidden canvas used to grab a frame -->
+        <canvas
+          id="canvas"
+          class="camera-canvas"
+          width="480"
+          height="360"
+        ></canvas>
+
+        <button id="captureBtn" class="btn btn-primary">
+          Capture &amp; Analyze
+        </button>
+
+        <div id="result" class="camera-result"></div>
+      </div>
+    </section>
+
+    <script>
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const captureBtn = document.getElementById('captureBtn');
+      const resultDiv = document.getElementById('result');
+
+      async function initCamera() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          video.srcObject = stream;
+        } catch (err) {
+          console.error('Error accessing camera:', err);
+          resultDiv.textContent = 'Could not access camera.';
+        }
+      }
+
+      async function captureAndAnalyze() {
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const dataUrl = canvas.toDataURL('image/png');
+
+        try {
+          const response = await fetch('{{ url_for("analyze") }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image: dataUrl }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            resultDiv.textContent = 'Error: ' + (data.error || 'Unknown error');
+            return;
+          }
+
+          resultDiv.textContent =
+            `Result: ${data.emoji} (${data.label}, confidence: ${data.confidence})`;
+        } catch (err) {
+          console.error(err);
+          resultDiv.textContent = 'Error contacting server.';
+        }
+      }
+
+      captureBtn.addEventListener('click', captureAndAnalyze);
+      initCamera();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+/* Camera page layout */
+.camera-container {
+  background-color: white;
+  min-height: calc(100vh - 100px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.camera-container .container {
+  max-width: 640px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Title */
+.camera-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+}
+
+/* Video & canvas */
+.camera-video {
+  border-radius: 12px;
+  max-width: 100%;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  margin-bottom: 1.5rem;
+  background-color: #000;
+  display: block;
+}
+
+/* We use the canvas only for grabbing a frame, so hide it */
+.camera-canvas {
+  display: none;
+}
+
+/* Button spacing */
+#captureBtn {
+  margin-bottom: 1rem;
+}
+
+/* Result text */
+.camera-result {
+  margin-top: 1rem;
+  font-size: 1.25rem;
+  min-height: 1.5em;
+  color: #2c3e50;
+  font-weight: 500;
+}

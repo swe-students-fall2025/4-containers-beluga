@@ -44,6 +44,11 @@ def create_app():
             db["test"].delete_one({"_id": ObjectId(entry_id)})
         return redirect(url_for("index"))
 
+    @app.route("/camera")
+    def camera():
+        """Render the camera page."""
+        return render_template("camera.html")
+
     @app.route("/analyze", methods=["POST"])
     def analyze():
         """Analyze an image using the ML client."""
