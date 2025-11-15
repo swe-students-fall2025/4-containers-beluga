@@ -1,5 +1,6 @@
-![Lint-free](https://github.com/nyu-software-engineering/containerized-app-exercise/actions/workflows/lint.yml/badge.svg)
-![Web App CI](https://github.com/nyu-software-engineering/containerized-app-exercise/actions/workflows/web-app-ci.yml/badge.svg)
+![Lint-free](https://github.com/swe-students-fall2025/4-containers-beluga/actions/workflows/lint.yml/badge.svg)
+![Web App CI](https://github.com/swe-students-fall2025/4-containers-beluga/actions/workflows/web-app-ci.yml/badge.svg)
+![Machine Learning Client CI](https://github.com/swe-students-fall2025/4-containers-beluga/actions/workflows/machine-learning-client-ci.yml/badge.svg)
 
 # Containerized App Exercise
 

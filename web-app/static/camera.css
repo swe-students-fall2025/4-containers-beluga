@@ -1,0 +1,96 @@
+/* Main layout */
+.camera-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.camera-container .container {
+  max-width: 720px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Title */
+.camera-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* Shared frame area (video OR photo) */
+.camera-frame {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  margin-bottom: 1rem;
+}
+
+/* Live video fills the frame */
+.camera-video {
+  display: block;
+  width: 100%;
+}
+
+/* Captured image also fills the frame */
+.camera-preview {
+  display: block;
+  width: 100%;
+}
+
+/* Hidden canvas used only for capture */
+.camera-canvas {
+  display: none;
+}
+
+/* Buttons row */
+.camera-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Discard & Retake button – neutral secondary */
+#retakeBtn {
+  background-color: #ffffff;
+  color: #7f8c8d;
+  border: 2px solid #bdc3c7;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+#retakeBtn:hover {
+  background-color: #ecf0f1;
+  border-color: #95a5a6;
+  color: #2c3e50;
+  transform: translateY(-1px);
+}
+
+#retakeBtn:active {
+  background-color: #dfe6e9;
+  transform: translateY(0);
+}
+
+/* Make primary action (Send to Whiteboard) pop a bit more */
+#sendBtn {
+  font-weight: 600;
+}
+
+/* Status text under the frame */
+.camera-result {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  min-height: 1.5em;
+}
+
+/* Utility: hide elements.
+     Placed at the end so it overrides other display rules. */
+.hidden {
+  display: none;
+}
