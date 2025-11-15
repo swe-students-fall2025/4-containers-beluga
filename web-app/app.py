@@ -2,7 +2,6 @@
 
 import base64
 import os
-from datetime import datetime
 
 from flask import Flask, jsonify, request, redirect, url_for, render_template
 from pymongo import MongoClient
@@ -67,20 +66,10 @@ def create_app():
             image_bytes = base64.b64decode(image_data)
 
             # TODO: Send image to ML client for processing
-            # For now, store the image in DB and return a placeholder response
-        
-
-            # Store image in database with timestamp
-            document = {
-                "image_data": image_bytes,
-                "timestamp": datetime.utcnow(),
-                "status": "pending",
-            }
-            result = db["images"].insert_one(document)
+            # For now, return a placeholder response
 
             # Placeholder response - replace with actual ML client integration
             response_data = {
-                "id": str(result.inserted_id),
                 "label": "thumbs_up",  # Placeholder
                 "confidence": 0.95,  # Placeholder
                 "emoji": "👍",  # Placeholder
