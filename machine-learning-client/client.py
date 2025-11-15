@@ -32,14 +32,14 @@ def main():
             for change in stream:
                 if change["operationType"] == "insert":
                     document = change["fullDocument"]
-                    doc_id = str(document["_id"])
+                    document_id = str(document["_id"])
                     text = document["text"]
-                    text_by_id[doc_id] = text
+                    text_by_id[document_id] = text
                     print(f"Add: {text}")
                 elif change["operationType"] == "delete":
-                    doc_id = str(change["documentKey"]["_id"])
-                    text = text_by_id[doc_id]
-                    del text_by_id[doc_id]
+                    document_id = str(change["documentKey"]["_id"])
+                    text = text_by_id[document_id]
+                    del text_by_id[document_id]
                     print(f"Remove: {text}")
     except KeyboardInterrupt:
         pass
