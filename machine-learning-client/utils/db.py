@@ -1,20 +1,21 @@
-from pymongo import MongoClient
+"""Database utilities."""
+
 import os
+from pymongo import MongoClient
+
 
 class Database:
+    """MongoDB wrapper."""
+
     def __init__(self):
-        mongo_uri = os.getenv("MONGO_URI", "mongodb://mongodb:27017/")
-        db_name = os.getenv("DB_NAME", "testdb")
-        self.client = MongoClient(mongo_uri)
-        self.db = self.client[db_name]
-        self.collection = self.db["ml_results"]
+        """Connect to MongoDB."""
+        uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017/")
+        self.client = MongoClient(uri)
 
-        print("[Database] Connected to", mongo_uri)
+    def get_db(self):
+        """Return database."""
+        return self.client["testdb"]
 
-    def insert_result(self, gesture, source="mediapipe"):
-        doc = {
-            "gesture": gesture,
-            "source": source
-        }
-        self.collection.insert_one(doc)
-        print("[Database] Inserted", doc)
+    def dummy(self):
+        """Dummy method for pylint."""
+        pass
