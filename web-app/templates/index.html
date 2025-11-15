@@ -1,26 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gesture Recognition App</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
     />
   </head>
   <body>
-    <form method="POST" class="add-form">
-      <input type="text" name="text" />
-      <button>Add</button>
-    </form>
-    <ul>
-      {% for entry in entries %}
-      <li>
-        <form method="POST" action="{{ url_for('delete') }}">
-          <input type="hidden" name="id" value="{{ entry.id }}" />
-          <button>x</button>
-        </form>
-        <span>{{ entry.text }}</span>
-      </li>
-      {% endfor %}
-    </ul>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="container">
+        <div class="nav-brand">Beluga</div>
+        <ul class="nav-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#about">About</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1 class="hero-title">AI-Powered Gesture Recognition</h1>
+          <p class="hero-subtitle">
+            Detect and classify hand gestures in real-time using advanced
+            machine learning technology
+          </p>
+          <div class="hero-buttons">
+            <a href="#features" class="btn btn-primary">Learn More</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+      <div class="container">
+        <h2 class="section-title">Supported Gestures</h2>
+        <p class="section-subtitle">
+          Our ML model can recognize the following hand gestures
+        </p>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">👍</div>
+            <h3 class="feature-title">Thumbs Up</h3>
+            <p class="feature-description">
+              Positive gesture recognition for approval signals
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">👎</div>
+            <h3 class="feature-title">Thumbs Down</h3>
+            <p class="feature-description">
+              Negative gesture recognition for disapproval signals
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">✋</div>
+            <h3 class="feature-title">Open Palm</h3>
+            <p class="feature-description">
+              Stop or halt gesture detection with high accuracy
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">✊</div>
+            <h3 class="feature-title">Fist</h3>
+            <p class="feature-description">
+              Closed fist gesture recognition for various commands
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">✌️</div>
+            <h3 class="feature-title">Victory</h3>
+            <p class="feature-description">
+              Peace or victory sign detection with precise recognition
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3 class="feature-title">Real-time Analysis</h3>
+            <p class="feature-description">
+              Fast, local processing powered by MediaPipe technology
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+      <div class="container">
+        <div class="about-content">
+          <div class="about-text">
+            <h2 class="section-title">How It Works</h2>
+            <p class="about-description">
+              Our gesture recognition system uses Google MediaPipe Hands, a
+              state-of-the-art machine learning model that processes hand
+              landmarks in real-time. The system analyzes 21 hand landmarks to
+              accurately classify gestures with high precision.
+            </p>
+            <p class="about-description">
+              All recognition results are stored in MongoDB, providing you with
+              a complete overview of gesture detection activity and analytics.
+            </p>
+            <ul class="about-features">
+              <li>✅ Containerized architecture for easy deployment</li>
+              <li>✅ Real-time gesture detection and classification</li>
+              <li>✅ Persistent data storage with MongoDB</li>
+              <li>✅ Web-based interface for visualization</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>Beluga</p>
+      </div>
+    </footer>
   </body>
 </html>
