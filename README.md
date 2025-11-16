@@ -6,6 +6,28 @@
 
 Build a containerized app that uses machine learning. See [instructions](./instructions.md) for details.
 
+## Quick Start with Docker Compose
+
+To run all services together:
+
+```bash
+# Copy environment variables file
+cp env.example .env
+
+# Edit .env file with your configuration if needed
+
+# Start all services
+docker compose up --build
+
+# Or run in detached mode
+docker compose up -d --build
+```
+
+This will start:
+- MongoDB database
+- Web application
+- Machine Learning client
+
 ## MongoDB
 
 Set up MongoDB as a replica set:
