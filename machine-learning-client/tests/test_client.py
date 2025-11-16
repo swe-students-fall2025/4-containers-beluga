@@ -1,7 +1,6 @@
 # pylint: disable=redefined-outer-name
 """Tests for the ML-client API server."""
 
-import base64
 import pytest
 from client import create_app
 
