@@ -9,6 +9,11 @@ def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
 
+    @app.route("/")
+    def index():
+        """Render the home page."""
+        return render_template("index.html")
+
     @app.route("/camera")
     def camera():
         """Render the camera page."""

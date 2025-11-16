@@ -1,0 +1,9 @@
+[tool.pylint.messages_control]
+disable = [
+    "no-member",    # Disable the no-member warning for cv2 since it uses dynamic imports
+    "import-error", # Disable import-error for test files since pytest handles the path correctly
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

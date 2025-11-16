@@ -1,4 +1,5 @@
-# gesture_api.py
+"""Gesture recognition API using MediaPipe."""
+
 import cv2
 import mediapipe as mp
 
@@ -7,6 +8,9 @@ mp_draw = mp.solutions.drawing_utils
 
 
 def analyze_image(image_path):
+    """
+    Analyze an image to detect hand gestures.
+    """
     image = cv2.imread(image_path)
     if image is None:
         raise FileNotFoundError(f"Image not found: {image_path}")
