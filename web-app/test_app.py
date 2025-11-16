@@ -1,3 +1,5 @@
+# pylint: disable=redefined-outer-name
+
 """Tests for the Flask web app."""
 
 import pytest
