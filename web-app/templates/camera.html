@@ -171,7 +171,7 @@
           }
 
           resultDiv.textContent =
-            `Sent! Result: ${data.emoji} (${data.label}, confidence: ${data.confidence})`;
+            `Result: ${data.emoji} (${data.gesture})`;
         } catch (err) {
           console.error(err);
           resultDiv.textContent = 'Error contacting server.';

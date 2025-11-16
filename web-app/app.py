@@ -2,12 +2,17 @@
 
 import base64
 
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, redirect
+import requests
 
 
 def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
+
+    @app.route("/")
+    def index():
+        return redirect("/camera")
 
     @app.route("/camera")
     def camera():
@@ -16,36 +21,38 @@ def create_app():
 
     @app.route("/analyze", methods=["POST"])
     def analyze():
-        """Analyze an image using the ML client."""
-        try:
-            data = request.get_json()
-            if not data or "image" not in data:
-                return jsonify({"error": "No image provided"}), 400
+        data = request.get_json()
 
-            # Extract base64 image data
-            image_data = data["image"]
-            if image_data.startswith("data:image"):
-                # Remove data URL prefix (e.g., "data:image/jpeg;base64,")
-                image_data = image_data.split(",", 1)[1]
+        # call the ML-client API
+        ml_response = requests.post(
+            "http://localhost:6000/analyze-image", json={"image": data["image"]}
+        )
 
-            # Decode base64 image
-            _image_bytes = base64.b64decode(image_data)
+        gesture = ml_response.json().get("gesture", "unknown")
 
-            # TODO: Send image to ML client for processing
-            # For now, return a placeholder response
+        # FULL gesture → emoji mapping table
+        emoji_map = {
+            "thumbs_up": "👍",
+            "thumbs_down": "👎",
+            "open_palm": "✋",
+            "fist": "✊",
+            "victory": "✌️",
+            "rock": "🤘",
+            "ok": "👌",
+            "point": "👉",
+            "no_hand": "❓",
+            "no_image": "❓",
+            "unknown": "❓",
+        }
 
-            # Placeholder response - replace with actual ML client integration
-            response_data = {
-                "label": "thumbs_up",  # Placeholder
-                "confidence": 0.95,  # Placeholder
-                "emoji": "👍",  # Placeholder
-                "message": "Image received. ML processing not yet integrated.",
+        return jsonify(
+            {
+                "gesture": gesture,
+                "emoji": emoji_map.get(gesture, "❓"),
+                "label": gesture,
+                "confidence": 1.0,
             }
-
-            return jsonify(response_data), 200
-
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
+        )
 
     return app
 
