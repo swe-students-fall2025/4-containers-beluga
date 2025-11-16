@@ -1,22 +1,28 @@
+"""Flask web app providing camera interface and gesture analysis."""
+
 import os
-from flask import Flask, jsonify, request, render_template, redirect
 import base64
+from flask import Flask, jsonify, request, render_template, redirect
 import requests
 
 
 def create_app():
+    """Create and configure the Flask application."""
     app = Flask(__name__)
 
     @app.route("/")
     def index():
+        """Redirect root URL to the camera page."""
         return redirect("/camera")
 
     @app.route("/camera")
     def camera():
+        """Render the camera page."""
         return render_template("camera.html")
 
     @app.route("/analyze", methods=["POST"])
     def analyze():
+        """Analyze the uploaded base64 image and return gesture result."""
         try:
             data = request.get_json(force=True, silent=False)
 
@@ -25,19 +31,13 @@ def create_app():
 
             image_b64 = data["image"]
 
-            # ================================
-            # 🟢 CI MODE (MOCK ML-SERVER)
-            # ================================
+            # CI mock: simulate ML server
             if os.getenv("CI") == "true":
-
-                # Simulate invalid base64 → throw exception → test expects 500
                 try:
-                    # simple base64 validation
                     base64.b64decode(image_b64, validate=True)
                 except Exception:
                     return jsonify({"error": "Invalid base64"}), 500
 
-                # Normal (valid image case)
                 return (
                     jsonify(
                         {
@@ -51,9 +51,7 @@ def create_app():
                     200,
                 )
 
-            # ================================
-            # 🟣 REAL ML SERVER CALL (LOCAL)
-            # ================================
+            # Real ML server call
             ml_response = requests.post(
                 "http://localhost:6000/analyze-image",
                 json={"image": image_b64},
@@ -89,12 +87,12 @@ def create_app():
                 200,
             )
 
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
 
     return app
 
 
 if __name__ == "__main__":  # pragma: no cover
-    flask_app = create_app()
-    flask_app.run(host="0.0.0.0", port=5000, debug=True)
+    APP = create_app()
+    APP.run(host="0.0.0.0", port=5000, debug=True)
