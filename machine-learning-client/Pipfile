@@ -6,7 +6,9 @@ name = "pypi"
 [packages]
 pymongo = "*"
 python-dotenv = "*"
-mediapipe = "==0.10.7"
+opencv-python = "*"
+flask = "*"
+mediapipe = "*"
 opencv-python-headless = "*"
 
 [dev-packages]

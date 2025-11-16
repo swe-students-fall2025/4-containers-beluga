@@ -5,6 +5,12 @@ name = "pypi"
 
 [packages]
 flask = "*"
+pymongo = "*"
+python-dotenv = "*"
+opencv-python = "*"
+requests = "*"
+exceptiongroup = "*"
+
 
 [dev-packages]
 pytest = "*"
