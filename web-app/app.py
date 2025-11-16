@@ -19,40 +19,51 @@ def create_app():
 
     @app.route("/analyze", methods=["POST"])
     def analyze():
-        data = request.get_json()
+        try:
+            # Parse JSON
+            data = request.get_json(force=True, silent=False)
 
-        # call the ML-client API
-        ml_response = requests.post(
-            "http://localhost:6000/analyze-image",
-            json={"image": data["image"]},
-            timeout=5,
-        )
+            # Missing or empty JSON
+            if not data or "image" not in data:
+                return jsonify({"error": "No image provided"}), 400
 
-        gesture = ml_response.json().get("gesture", "unknown")
+            image_b64 = data["image"]
 
-        # FULL gesture → emoji mapping table
-        emoji_map = {
-            "thumbs_up": "👍",
-            "thumbs_down": "👎",
-            "open_palm": "✋",
-            "fist": "✊",
-            "victory": "✌️",
-            "rock": "🤘",
-            "ok": "👌",
-            "point": "👉",
-            "no_hand": "❓",
-            "no_image": "❓",
-            "unknown": "❓",
-        }
+            # call the ML-client API
+            ml_response = requests.post(
+                "http://localhost:6000/analyze-image",
+                json={"image": image_b64},
+                timeout=5,
+            )
 
-        return jsonify(
-            {
-                "gesture": gesture,
-                "emoji": emoji_map.get(gesture, "❓"),
-                "label": gesture,
-                "confidence": 1.0,
+            gesture = ml_response.json().get("gesture", "unknown")
+
+            emoji_map = {
+                "thumbs_up": "👍",
+                "thumbs_down": "👎",
+                "open_palm": "✋",
+                "fist": "✊",
+                "victory": "✌️",
+                "rock": "🤘",
+                "ok": "👌",
+                "point": "👉",
+                "no_hand": "❓",
+                "no_image": "❓",
+                "unknown": "❓",
             }
-        )
+
+            return jsonify(
+                {
+                    "gesture": gesture,
+                    "emoji": emoji_map.get(gesture, "❓"),
+                    "label": gesture,
+                    "confidence": 1.0,
+                    "message": "Processed successfully",
+                }
+            )
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
     return app
 
