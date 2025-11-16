@@ -1,3 +1,6 @@
+"""Placeholder tests for ML client (to be implemented by teammates)."""
+
+
 def test_placeholder():
-    """Basic test to ensure pytest + CI pipeline works."""
+    """Basic passing test to satisfy CI."""
     assert True
