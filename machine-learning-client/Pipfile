@@ -8,7 +8,7 @@ pymongo = "*"
 python-dotenv = "*"
 opencv-python = "*"
 flask = "*"
-mediapipe = "==0.10.7"
+mediapipe = "*"
 opencv-python-headless = "*"
 
 [dev-packages]
