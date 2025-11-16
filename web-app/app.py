@@ -1,7 +1,5 @@
 """Main entry point for Flask web app."""
 
-import base64
-
 from flask import Flask, jsonify, request, render_template, redirect
 import requests
 
@@ -25,7 +23,9 @@ def create_app():
 
         # call the ML-client API
         ml_response = requests.post(
-            "http://localhost:6000/analyze-image", json={"image": data["image"]}
+            "http://localhost:6000/analyze-image",
+            json={"image": data["image"]},
+            timeout=5,
         )
 
         gesture = ml_response.json().get("gesture", "unknown")
