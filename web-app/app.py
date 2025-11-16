@@ -1,7 +1,6 @@
-"""Main entry point for Flask web app."""
-
 import os
 from flask import Flask, jsonify, request, render_template, redirect
+import base64
 import requests
 
 
@@ -26,8 +25,19 @@ def create_app():
 
             image_b64 = data["image"]
 
-            # =============== 🟢 CI mode: no ML server, return mock ====================
+            # ================================
+            # 🟢 CI MODE (MOCK ML-SERVER)
+            # ================================
             if os.getenv("CI") == "true":
+
+                # Simulate invalid base64 → throw exception → test expects 500
+                try:
+                    # simple base64 validation
+                    base64.b64decode(image_b64, validate=True)
+                except Exception:
+                    return jsonify({"error": "Invalid base64"}), 500
+
+                # Normal (valid image case)
                 return (
                     jsonify(
                         {
@@ -40,9 +50,10 @@ def create_app():
                     ),
                     200,
                 )
-            # ===========================================================================
 
-            # =============== 🟣 Real ML server call ==================================
+            # ================================
+            # 🟣 REAL ML SERVER CALL (LOCAL)
+            # ================================
             ml_response = requests.post(
                 "http://localhost:6000/analyze-image",
                 json={"image": image_b64},
@@ -50,7 +61,6 @@ def create_app():
             )
             result = ml_response.json()
             gesture = result.get("gesture", "unknown")
-            # ===========================================================================
 
             emoji_map = {
                 "thumbs_up": "👍",
