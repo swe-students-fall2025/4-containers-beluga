@@ -1,70 +1,99 @@
-# gesture_api.py
 import cv2
 import mediapipe as mp
+import math
+import pprint
 
 mp_hands = mp.solutions.hands.Hands(static_image_mode=True)
-mp_draw = mp.solutions.drawing_utils
+
+
+def debug_landmarks(lm):
+    pprint.pprint(
+        {
+            "thumb": (lm[4].y, lm[2].y),
+            "index": (lm[8].y, lm[6].y),
+            "middle": (lm[12].y, lm[10].y),
+            "ring": (lm[16].y, lm[14].y),
+            "pinky": (lm[20].y, lm[18].y),
+        }
+    )
+
+
+def is_folded(tip, pip):
+    """
+    Finger is folded if tip.y and pip.y are close (distance small),
+    OR tip slightly above pip (your thumbs-up behaves like this).
+    """
+    return abs(tip.y - pip.y) < 0.12
+
+
+def distance(a, b):
+    return math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2)
 
 
 def analyze_image(image_path):
     image = cv2.imread(image_path)
     if image is None:
-        raise FileNotFoundError(f"Image not found: {image_path}")
+        return {"gesture": "no_image"}
+
     img_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = mp_hands.process(img_rgb)
+
     if not results.multi_hand_landmarks:
-        return {"gesture": "no hand detected", "score": 0.0}
+        return {"gesture": "no_hand"}
 
-    hand = results.multi_hand_landmarks[0]
+    lm = results.multi_hand_landmarks[0].landmark
+    debug_landmarks(lm)
 
-    # Tips
-    thumb_tip = hand.landmark[4]
-    index_tip = hand.landmark[8]
-    middle_tip = hand.landmark[12]
-    ring_tip = hand.landmark[16]
-    pinky_tip = hand.landmark[20]
+    # Landmarks
+    thumb_tip, thumb_mcp = lm[4], lm[2]
+    index_tip, index_pip = lm[8], lm[6]
+    middle_tip, middle_pip = lm[12], lm[10]
+    ring_tip, ring_pip = lm[16], lm[14]
+    pinky_tip, pinky_pip = lm[20], lm[18]
 
-    # Knuckles
-    index_knuckle = hand.landmark[5]
-    middle_knuckle = hand.landmark[9]
-    ring_knuckle = hand.landmark[13]
-    pinky_knuckle = hand.landmark[17]
+    # Finger bending
+    index_bent = is_folded(index_tip, index_pip)
+    middle_bent = is_folded(middle_tip, middle_pip)
+    ring_bent = is_folded(ring_tip, ring_pip)
+    pinky_bent = is_folded(pinky_tip, pinky_pip)
 
-    gesture = "unknown"
+    # ================================
+    # Vertical Thumb Up / Down
+    # ================================
+    thumb_up = thumb_tip.y < thumb_mcp.y - 0.05
+    thumb_down = thumb_tip.y > thumb_mcp.y + 0.05
 
-    # 1. Thumbs Up
-    if thumb_tip.y < index_tip.y and thumb_tip.y < middle_tip.y:
-        gesture = "thumbs up"
+    # 👍 THUMBS UP
+    if thumb_up and index_bent and middle_bent and ring_bent and pinky_bent:
+        return {"gesture": "thumbs_up", "score": 1.0}
 
-    # 2. Thumbs Down
-    elif thumb_tip.y > index_tip.y and thumb_tip.y > middle_tip.y:
-        gesture = "thumbs down"
+    # 👎 THUMBS DOWN
+    if thumb_down and index_bent and middle_bent and ring_bent and pinky_bent:
+        return {"gesture": "thumbs_down", "score": 1.0}
 
-    # 3. Victory
-    elif (
-        index_tip.y < index_knuckle.y
-        and middle_tip.y < middle_knuckle.y
-        and ring_tip.y > ring_knuckle.y
-        and pinky_tip.y > pinky_knuckle.y
-    ):
-        gesture = "victory"
+    # ✋ Open palm (all straight)
+    if not index_bent and not middle_bent and not ring_bent and not pinky_bent:
+        return {"gesture": "open_palm", "score": 1.0}
 
-    # 4. Open Palm
-    elif (
-        index_tip.y < index_knuckle.y
-        and middle_tip.y < middle_knuckle.y
-        and ring_tip.y < ring_knuckle.y
-        and pinky_tip.y < pinky_knuckle.y
-    ):
-        gesture = "open palm"
+    # ✊ Fist (all folded)
+    if index_bent and middle_bent and ring_bent and pinky_bent:
+        return {"gesture": "fist", "score": 1.0}
 
-    # 5. Fist
-    elif (
-        index_tip.y > index_knuckle.y
-        and middle_tip.y > middle_knuckle.y
-        and ring_tip.y > ring_knuckle.y
-        and pinky_tip.y > pinky_knuckle.y
-    ):
-        gesture = "fist"
+    # =====================================================
+    # ✌️  Victory (index + middle straight, others folded)
+    # =====================================================
+    index_straight = not index_bent
+    middle_straight = not middle_bent
 
-    return {"gesture": gesture, "score": 1.0}
+    if index_straight and middle_straight and ring_bent and pinky_bent:
+        return {"gesture": "victory", "score": 1.0}
+
+    # =====================================================
+    # 👌  OK gesture (thumb-index circle)
+    # =====================================================
+    thumb_index_dist = distance(thumb_tip, index_tip)
+
+    if thumb_index_dist < 0.08 and middle_straight:
+        return {"gesture": "ok", "score": 1.0}
+
+    return {"gesture": "unknown", "score": 0.0}
