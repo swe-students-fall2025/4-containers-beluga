@@ -9,6 +9,7 @@ python-dotenv = "*"
 opencv-python = "*"
 flask = "*"
 mediapipe = "==0.10.7"
+opencv-python-headless = "*"
 
 [dev-packages]
 pytest = "*"

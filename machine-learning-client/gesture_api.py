@@ -31,6 +31,9 @@ def distance(a, b):
 
 
 def analyze_image(image_path):
+    """
+    Analyze an image to detect hand gestures.
+    """
     image = cv2.imread(image_path)
     if image is None:
         return {"gesture": "no_image"}
