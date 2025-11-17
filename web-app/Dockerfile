@@ -12,7 +12,7 @@ COPY Pipfile Pipfile.lock ./
 
 # Install dependencies using pipenv - doing this first will speed up subsequent builds, as Docker will cache this step
 # --deploy ensures the lock file is up to date
-RUN pipenv install --deploy
+RUN pipenv install
 
 # the ADD command is how you add files from your local machine into a Docker image
 # Copy the current directory contents into the container at /app
