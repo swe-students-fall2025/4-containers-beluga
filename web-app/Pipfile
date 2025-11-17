@@ -4,17 +4,20 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pylint = "*"
-black = "*"
 flask = "*"
 pymongo = "*"
 python-dotenv = "*"
 opencv-python = "*"
+requests = "*"
+exceptiongroup = "*"
+
 
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
 pytest-flask = "*"
+pylint = "*"
+black = "*"
 
 [requires]
 python_version = "3.10"
