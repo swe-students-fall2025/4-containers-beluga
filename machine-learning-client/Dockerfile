@@ -1,6 +1,6 @@
 # in Docker, it is common to base a new image on a previously-created image
 # Use an official Python runtime image as a parent image to base this image on
-FROM python:3.13-slim
+FROM python:3.10-slim
 # Set the working directory within the image to /app
 WORKDIR /app
 # the ADD command is how you add files from your local machine into a Docker image
