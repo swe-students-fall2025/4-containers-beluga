@@ -10,10 +10,11 @@ def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
 
+    
     @app.route("/")
     def index():
-        """Redirect root URL to the camera page."""
-        return redirect("/camera")
+        """Render landing (index) page instead of redirecting to camera."""
+        return render_template("index.html")
 
     @app.route("/camera")
     def camera():
