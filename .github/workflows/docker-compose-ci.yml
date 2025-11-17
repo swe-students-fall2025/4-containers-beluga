@@ -1,0 +1,26 @@
+name: Docker Compose Check
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v4
+        -
+            name: set up docker compose
+            uses: docker/setup-compose-action@v1 
+        - 
+            name: Run docker compose
+            run: |
+                docker compose up --wait
+        - 
+            name: Check status
+            run: docker compose ps
+        # - 
+        #     name: Finish
+        #     if: ${{ always() }}
+        #     run: docker compose down

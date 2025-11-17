@@ -11,6 +11,12 @@ services:
     depends_on:
       - mongodb
       - mlclient
+    healthcheck:
+      test: ["CMD-SHELL", "python - <<'PY'\nimport urllib.request,sys; urllib.request.urlopen('http://localhost:5000/').read(); print('ok')\nPY"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
 
   mongodb:
     image: mongo:latest
