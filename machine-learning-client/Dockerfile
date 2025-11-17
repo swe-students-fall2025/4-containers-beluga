@@ -14,6 +14,6 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 ARG PORT=80
 EXPOSE ${PORT}
 # Define an environment variable... this will be available to programs running inside the container
-ENV FOO bar
+# ENV FOO bar
 # Run app.py when the container launches
-CMD ["python", "app.py"]
+CMD ["python", "client.py"]

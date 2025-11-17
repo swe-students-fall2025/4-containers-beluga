@@ -2,7 +2,7 @@ version: '3.8'
 services:
   webapp:
     environment:
-      - CONN_STR=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@localhost:${MONGODB_PORT}/data-storage-app?authSource=admin
+      - CONN_STR=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:${MONGODB_PORT}/?authSource=admin
       - PORT=5000
     build:
       context: ./web-app
@@ -15,11 +15,13 @@ services:
 
   mongodb:
     image: mongo:latest
+    command: ["--replSet", "rs0"]
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     ports:
       - "${MONGODB_PORT}:27017"
+    
     # volumes:
       # - type: bind
       #   source: ./data
@@ -34,3 +36,9 @@ services:
     environment:
       - PORT=80
       - WEBAPP=http://localhost:${WEBAPP_PORT}
+      - DB_NAME=testdb
+      - MONGO_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:${MONGODB_PORT}/?authSource=admin
+    depends_on:
+      - mongodb
+      # mongodb:
+      #   condition: service_healthy
