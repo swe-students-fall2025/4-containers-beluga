@@ -1,6 +1,7 @@
 """Flask web app providing camera interface and gesture analysis."""
 
 import os
+import time
 import base64
 from flask import Flask, jsonify, request, render_template, redirect
 from pymongo import MongoClient
@@ -53,6 +54,91 @@ def create_app():
         """Render the camera page."""
         return render_template("camera.html")
 
+    @app.route("/whiteboard")
+    def whiteboard():
+        """Render the whiteboard page showing today's moods."""
+        return render_template("whiteboard.html")
+
+    @app.route("/api/whiteboard", methods=["GET"])
+    def get_whiteboard_data():
+        """Fetch gestures from the last 24 hours for the whiteboard."""
+        try:
+            collection = get_mongo_collection()
+            if collection is None:
+                return jsonify({
+                    "gestures": [],
+                    "count": 0,
+                    "error": "Database connection failed. Please check MongoDB is running."
+                }), 503
+
+            # Calculate timestamp from 24 hours ago
+            twenty_four_hours_ago = time.time() - (24 * 60 * 60)
+
+            # Query MongoDB for gestures from last 24 hours
+            # First, delete entries older than 24 hours
+            collection.delete_many({"timestamp": {"$lt": twenty_four_hours_ago}})
+
+            # Fetch recent gestures
+            recent_gestures = list(
+                collection.find(
+                    {"timestamp": {"$gte": twenty_four_hours_ago}},
+                    {"_id": 0}  # Exclude MongoDB _id field
+                ).sort("timestamp", -1)  # Sort by most recent first
+            )
+
+            # Map gestures to mood emojis (using the same mapping as in database)
+            # The emoji is already stored in the database, but we can also map here
+            mood_map = {
+                "thumbs_up": "😄",
+                "thumbs_down": "😞",
+                "open_palm": "🙂",
+                "fist": "😤",
+                "victory": "😎",
+                "ok": "😊",
+                "point": "👉",
+            }
+
+            # Format the gestures for display
+            formatted_gestures = []
+            for gesture in recent_gestures:
+                gesture_type = gesture.get("gesture", "unknown")
+                # Skip no_hand and unknown gestures - do nothing
+                if gesture_type in ["no_hand", "unknown", "no_image"]:
+                    continue
+                
+                # Use emoji from database if available, otherwise map it
+                emoji = gesture.get("emoji") or mood_map.get(gesture_type, "❓")
+                formatted_gestures.append({
+                    "emoji": emoji,
+                    "gesture": gesture_type,
+                    "mood": gesture.get("mood", "unknown"),
+                    "timestamp": gesture.get("timestamp"),
+                    "time_ago": _format_time_ago(gesture.get("timestamp", time.time())),
+                })
+
+            return jsonify({
+                "gestures": formatted_gestures,
+                "count": len(formatted_gestures),
+                "message": "Whiteboard data retrieved successfully"
+            }), 200
+
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    def _format_time_ago(timestamp):
+        """Format timestamp as human-readable time ago."""
+        seconds_ago = time.time() - timestamp
+        if seconds_ago < 60:
+            return "just now"
+        elif seconds_ago < 3600:
+            minutes = int(seconds_ago / 60)
+            return f"{minutes}m ago"
+        elif seconds_ago < 86400:
+            hours = int(seconds_ago / 3600)
+            return f"{hours}h ago"
+        else:
+            return "over 24h ago"
+
     @app.route("/analyze", methods=["POST"])
     def analyze():
         """Analyze the uploaded base64 image and return gesture result."""
@@ -84,7 +170,7 @@ def create_app():
                     200,
                 )
 
-            # Real ML server call
+            # ML server call
             ml_response = requests.post(
                 "http://localhost:6000/analyze-image",
                 json={"image": image_b64},
