@@ -1,4 +1,4 @@
-# in Docker, it is common to base a new image on a previously-created image
+# In Docker, it is common to base a new image on a previously-created image
 # Use an official Python runtime image as a parent image to base this image on
 FROM python:3.10-slim
 
@@ -18,15 +18,15 @@ RUN pip install pipenv
 # Copy Pipfile and Pipfile.lock for dependency installation
 COPY Pipfile Pipfile.lock ./
 
-# Install dependencies using pipenv - doing this first will speed up subsequent builds, as Docker will cache this step
-# --deploy ensures the lock file is up to date
-RUN pipenv install --deploy
+# Install dependencies using pipenv - doing this first will speed up subsequent
+# builds, as Docker will cache this step
+RUN pipenv sync --system
 
-# the ADD command is how you add files from your local machine into a Docker image
+# The ADD command is how you add files from your local machine into a Docker image
 # Copy the current directory contents into the container at /app
 ADD . .
 
-# by default Docker containers are closed off to the external world
+# By default Docker containers are closed off to the external world
 # Make port 80 available to the world outside this container
 ARG PORT=80
 EXPOSE ${PORT}
@@ -35,4 +35,4 @@ EXPOSE ${PORT}
 ENV FOO bar
 
 # Run client.py when the container launches
-CMD ["pipenv", "run", "python", "client.py"]
+CMD ["python", "client.py"]
