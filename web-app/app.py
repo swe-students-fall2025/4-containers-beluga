@@ -2,7 +2,7 @@
 
 import os
 import base64
-from flask import Flask, jsonify, request, render_template, redirect
+from flask import Flask, jsonify, request, render_template
 import requests
 from dotenv import load_dotenv
 
