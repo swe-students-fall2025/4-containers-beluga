@@ -1,0 +1,264 @@
+/* Whiteboard Page Styles */
+
+.whiteboard-container {
+  padding: 3rem 0;
+  min-height: calc(100vh - 200px);
+  background: #f0f0f0;
+}
+
+.whiteboard-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.whiteboard-title {
+  font-size: 3rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.whiteboard-subtitle {
+  font-size: 1.25rem;
+  color: #5a6c7d;
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.whiteboard-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 0.95rem;
+  color: #5a6c7d;
+}
+
+.stat-count {
+  font-weight: 600;
+  color: #4a90e2;
+}
+
+.stat-separator {
+  color: #b3d9ff;
+}
+
+.stat-info {
+  font-style: italic;
+}
+
+/* Loading State */
+.loading-message {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #5a6c7d;
+}
+
+.spinner {
+  border: 4px solid #e6f3ff;
+  border-top: 4px solid #4a90e2;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-message p {
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h2 {
+  font-size: 1.75rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: #5a6c7d;
+  margin-bottom: 2rem;
+}
+
+/* Whiteboard Surface */
+.mood-wall {
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  max-width: 1200px;
+  margin: 2rem auto;
+  background: linear-gradient(to bottom, #f5f5dc 0%, #e8e8d3 100%);
+  border: 8px solid #8b7355;
+  border-radius: 4px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1), 0 10px 40px rgba(0, 0, 0, 0.3);
+  padding: 2rem;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-in;
+  /* Whiteboard texture */
+  background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    );
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Mood Item - Randomly positioned on whiteboard */
+.mood-item {
+  position: absolute;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  animation: appearOnBoard 0.5s ease-out;
+  z-index: 1;
+}
+
+@keyframes appearOnBoard {
+  from {
+    opacity: 0;
+    transform: scale(0) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.mood-item:hover {
+  transform: scale(1.2) rotate(5deg) !important;
+  z-index: 10;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Emoji Display - Larger, more prominent */
+.mood-emoji {
+  font-size: 4rem;
+  line-height: 1;
+  display: block;
+  transition: transform 0.2s ease;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mood-item:hover .mood-emoji {
+  transform: scale(1.1);
+}
+
+/* Time Info - Smaller, subtle */
+.mood-time {
+  font-size: 0.65rem;
+  color: #666;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Error Message */
+.error-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  background-color: #fff5f5;
+  border: 1px solid #ffcccc;
+  border-radius: 12px;
+  color: #c53030;
+}
+
+.error-message p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+/* Utility Classes */
+.hidden {
+  display: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .whiteboard-title {
+    font-size: 2rem;
+  }
+
+  .whiteboard-subtitle {
+    font-size: 1rem;
+  }
+
+  .whiteboard-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stat-separator {
+    display: none;
+  }
+
+  .mood-wall {
+    min-height: 500px;
+    padding: 1.5rem;
+  }
+
+  .mood-emoji {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mood-wall {
+    min-height: 400px;
+    padding: 1rem;
+  }
+
+  .mood-emoji {
+    font-size: 2.5rem;
+  }
+
+  .mood-time {
+    font-size: 0.6rem;
+  }
+}
