@@ -5,11 +5,11 @@ name = "pypi"
 
 [packages]
 pymongo = "*"
-python-dotenv = "*"
 opencv-python = "*"
 flask = "*"
 mediapipe = "*"
 opencv-python-headless = "*"
+python-dotenv = "*"
 
 [dev-packages]
 pytest = "*"
