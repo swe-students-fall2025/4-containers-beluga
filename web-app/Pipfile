@@ -6,11 +6,10 @@ name = "pypi"
 [packages]
 flask = "*"
 pymongo = "*"
-python-dotenv = "*"
 opencv-python = "*"
 requests = "*"
 exceptiongroup = "*"
-
+python-dotenv = "*"
 
 [dev-packages]
 pytest = "*"

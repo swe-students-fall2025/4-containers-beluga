@@ -4,7 +4,14 @@ import os
 import base64
 from flask import Flask, jsonify, request, render_template, redirect
 import requests
+from dotenv import load_dotenv
 
+load_dotenv()
+
+ML_PORT = int(os.getenv("MLCLIENT_PORT", "80"))
+ML_HOST = os.getenv("MLCLIENT_HOST", "mlclient")
+
+ML_URL = f"http://{ML_HOST}:{ML_PORT}"
 
 def create_app():
     """Create and configure the Flask application."""
@@ -53,8 +60,7 @@ def create_app():
                 )
 
             # Real ML server call
-            ml_response = requests.post(
-                "http://localhost:6000/analyze-image",
+            ml_response = requests.post(ML_URL + "/analyze-image",
                 json={"image": image_b64},
                 timeout=5,
             )
@@ -96,4 +102,5 @@ def create_app():
 
 if __name__ == "__main__":  # pragma: no cover
     APP = create_app()
-    APP.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("WEBAPP_PORT", 5000))
+    APP.run(host="0.0.0.0", port=port, debug=True)
