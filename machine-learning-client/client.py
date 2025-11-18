@@ -3,11 +3,11 @@
 import os
 import time
 import base64
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from gesture_api import analyze_image
 from mapping import map_gesture
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -19,6 +19,8 @@ COLLECTION_NAME = "gestures"
 client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
 db = client[DB_NAME]
 collection = db[COLLECTION_NAME]
+
+load_dotenv()
 
 def create_app():
     """Factory for creating Flask app (needed for testing)."""
@@ -42,6 +44,7 @@ def create_app():
             try:
                 img_bytes = base64.b64decode(image_data)
             except Exception as exc:
+                print(exc)
                 return jsonify({"error": "Invalid base64"}), 500
 
             # Save to temp file
@@ -53,6 +56,7 @@ def create_app():
             try:
                 result = analyze_image(temp_path)
             except Exception as exc:
+                print(exc)
                 return jsonify({"error": f"gesture_api failure: {exc}"}), 500
 
             gesture = result.get("gesture", "unknown")
@@ -70,6 +74,8 @@ def create_app():
                 "timestamp": time.time(),
             })
 
+
+
             # Return result
             return jsonify({
                 "gesture": gesture,
@@ -80,14 +86,17 @@ def create_app():
             }), 200
 
         except Exception as exc:
+            # Debug prints
+            print("Received request:", data)
+            print("Decoded image bytes:", len(img_bytes))
+            print("Gesture result:", result)
+            print(exc)
             return jsonify({"error": str(exc)}), 500
 
     return app
 
 
 if __name__ == "__main__":
-    app = create_app()
-    port = int(os.environ.get("PORT", 80))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    flask_app = create_app()
     port = int(os.environ.get("PORT", 80))
     app.run(host="0.0.0.0", port=port, debug=True)

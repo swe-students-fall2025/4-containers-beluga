@@ -47,7 +47,6 @@ def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
 
-    
     @app.route("/")
     def index():
         """Render landing (index) page instead of redirecting to camera."""
@@ -180,6 +179,13 @@ def create_app():
                 timeout=30,  # Increased timeout for image processing
             )
             result = ml_response.json()
+
+            # Check for error
+            if "error" in result:
+                print("error: " + result["error"])
+                return jsonify({"error": result["error"]}), 500
+
+
             gesture = result.get("gesture", "unknown")
 
             emoji_map = {

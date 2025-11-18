@@ -1,7 +1,10 @@
-import cv2
-import mediapipe as mp
+"""
+Identify gestures module
+"""
 import math
 import pprint
+import cv2
+import mediapipe as mp
 
 mp_hands = mp.solutions.hands.Hands(static_image_mode=True)
 
@@ -10,7 +13,9 @@ mp_hands = mp.solutions.hands.Hands(static_image_mode=True)
 # Utility functions
 # --------------------------
 
-
+"""
+    Debug print hand landmarks
+"""
 def debug_landmarks(lm):
     pprint.pprint(
         {
