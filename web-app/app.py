@@ -3,7 +3,7 @@
 import os
 import time
 import base64
-from flask import Flask, jsonify, request, render_template, redirect
+from flask import Flask, jsonify, request, render_template
 from pymongo import MongoClient
 import requests
 from dotenv import load_dotenv
@@ -19,14 +19,25 @@ ML_URL = f"http://{ML_HOST}:{ML_PORT}"
 def get_mongo_collection():
     """Get MongoDB collection with proper error handling."""
     try:
-        MONGO_URI = os.getenv("CONN_STR", os.getenv("MONGO_URI", "mongodb://localhost:27017/"))
+        MONGO_URI = os.getenv(
+            "CONN_STR", os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+        )
         # Extract database name from connection string if present, otherwise use default
         if "/" in MONGO_URI and "?" not in MONGO_URI.split("/")[-1]:
             # Connection string format: mongodb://host:port/dbname
-            DB_NAME = os.getenv("DB_NAME", MONGO_URI.split("/")[-1] if "/" in MONGO_URI else "testdb")
+            DB_NAME = os.getenv(
+                "DB_NAME", MONGO_URI.split("/")[-1] if "/" in MONGO_URI else "testdb"
+            )
         elif "/" in MONGO_URI and "?" in MONGO_URI:
             # Connection string format: mongodb://host:port/dbname?options
-            DB_NAME = os.getenv("DB_NAME", MONGO_URI.split("/")[-1].split("?")[0] if "/" in MONGO_URI else "testdb")
+            DB_NAME = os.getenv(
+                "DB_NAME",
+                (
+                    MONGO_URI.split("/")[-1].split("?")[0]
+                    if "/" in MONGO_URI
+                    else "testdb"
+                ),
+            )
         else:
             DB_NAME = os.getenv("DB_NAME", "testdb")
 
@@ -36,12 +47,13 @@ def get_mongo_collection():
         mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
         db = mongo_client[DB_NAME]
         # Test connection
-        mongo_client.admin.command('ping')
+        mongo_client.admin.command("ping")
         return db[COLLECTION_NAME]
     except Exception as exc:
         # Return None if connection fails - will be handled in routes
         print(f"MongoDB connection error: {exc}")
         return None
+
 
 def create_app():
     """Create and configure the Flask application."""
@@ -68,11 +80,16 @@ def create_app():
         try:
             collection = get_mongo_collection()
             if collection is None:
-                return jsonify({
-                    "gestures": [],
-                    "count": 0,
-                    "error": "Database connection failed. Please check MongoDB is running."
-                }), 503
+                return (
+                    jsonify(
+                        {
+                            "gestures": [],
+                            "count": 0,
+                            "error": "Database connection failed. Please check MongoDB is running.",
+                        }
+                    ),
+                    503,
+                )
 
             # Calculate timestamp from 24 hours ago
             twenty_four_hours_ago = time.time() - (24 * 60 * 60)
@@ -85,8 +102,10 @@ def create_app():
             recent_gestures = list(
                 collection.find(
                     {"timestamp": {"$gte": twenty_four_hours_ago}},
-                    {"_id": 0}  # Exclude MongoDB _id field
-                ).sort("timestamp", -1)  # Sort by most recent first
+                    {"_id": 0},  # Exclude MongoDB _id field
+                ).sort(
+                    "timestamp", -1
+                )  # Sort by most recent first
             )
 
             # Map gestures to mood emojis (using the same mapping as in database)
@@ -107,22 +126,31 @@ def create_app():
                 # Skip no_hand and unknown gestures - do nothing
                 if gesture_type in ["no_hand", "unknown", "no_image"]:
                     continue
-                
+
                 # Use emoji from database if available, otherwise map it
                 emoji = gesture.get("emoji") or mood_map.get(gesture_type, "❓")
-                formatted_gestures.append({
-                    "emoji": emoji,
-                    "gesture": gesture_type,
-                    "mood": gesture.get("mood", "unknown"),
-                    "timestamp": gesture.get("timestamp"),
-                    "time_ago": _format_time_ago(gesture.get("timestamp", time.time())),
-                })
+                formatted_gestures.append(
+                    {
+                        "emoji": emoji,
+                        "gesture": gesture_type,
+                        "mood": gesture.get("mood", "unknown"),
+                        "timestamp": gesture.get("timestamp"),
+                        "time_ago": _format_time_ago(
+                            gesture.get("timestamp", time.time())
+                        ),
+                    }
+                )
 
-            return jsonify({
-                "gestures": formatted_gestures,
-                "count": len(formatted_gestures),
-                "message": "Whiteboard data retrieved successfully"
-            }), 200
+            return (
+                jsonify(
+                    {
+                        "gestures": formatted_gestures,
+                        "count": len(formatted_gestures),
+                        "message": "Whiteboard data retrieved successfully",
+                    }
+                ),
+                200,
+            )
 
         except Exception as exc:
             return jsonify({"error": str(exc)}), 500
@@ -184,7 +212,6 @@ def create_app():
             if "error" in result:
                 print("error: " + result["error"])
                 return jsonify({"error": result["error"]}), 500
-
 
             gesture = result.get("gesture", "unknown")
 
