@@ -44,3 +44,5 @@ services:
     environment:
       - PORT=80
       - WEBAPP=http://localhost:${WEBAPP_PORT}
+      - MONGO_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/data-storage-app?authSource=admin
+      - DB_NAME=data-storage-app
