@@ -1,13 +1,13 @@
 """A mapping table: gesture label to (mood, emoji)."""
 
 GESTURE_MAP = {
-    "Thumbs Up": ("happy", "😄"),
-    "Thumbs Down": ("sad", "😞"),
-    "Victory": ("relaxed", "😎"),
-    "Open Palm": ("neutral", "🙂"),
-    "Fist": ("stressed", "😤"),
-    "OK": ("content", "😊"),
-    "Point": ("curious", "🤔"),
+    "thumbs_up": ("happy", "😄"),
+    "thumbs_down": ("sad", "😞"),
+    "victory": ("relaxed", "😎"),
+    "open_palm": ("neutral", "🙂"),
+    "fist": ("stressed", "😤"),
+    "ok": ("content", "😊"),
+    "point": ("curious", "🤔"),
 }
 
 
