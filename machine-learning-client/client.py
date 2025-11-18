@@ -15,11 +15,10 @@ MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 DB_NAME = os.getenv("DB_NAME", "testdb")
 COLLECTION_NAME = "gestures"
 
-# Initialize MongoDB client
-client = MongoClient(MONGO_URI)
+# Initialize MongoDB client with timeout
+client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
 db = client[DB_NAME]
 collection = db[COLLECTION_NAME]
-
 
 def create_app():
     """Factory for creating Flask app (needed for testing)."""
@@ -88,4 +87,5 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(host="0.0.0.0", port=6000, debug=True)
+    port = int(os.environ.get("PORT", 80))
+    app.run(host="0.0.0.0", port=port, debug=True)

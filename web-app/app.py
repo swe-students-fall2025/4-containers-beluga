@@ -172,9 +172,9 @@ def create_app():
 
             # ML server call
             ml_response = requests.post(
-                "http://localhost:6000/analyze-image",
+                ML_URL + "/analyze-image",
                 json={"image": image_b64},
-                timeout=5,
+                timeout=30,  # Increased timeout for image processing
             )
             result = ml_response.json()
             gesture = result.get("gesture", "unknown")
