@@ -60,7 +60,7 @@ def create_app():
                 )
 
             # Real ML server call
-            ml_response = requests.post(MLURL + "/analyze-image",
+            ml_response = requests.post(ML_URL + "/analyze-image",
                 json={"image": image_b64},
                 timeout=5,
             )
