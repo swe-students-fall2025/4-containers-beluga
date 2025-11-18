@@ -3,7 +3,7 @@
 import os
 import time
 import base64
-from flask import Flask, jsonify, request, render_template, redirect
+from flask import Flask, jsonify, request, render_template
 from pymongo import MongoClient
 import requests
 from dotenv import load_dotenv
@@ -19,25 +19,31 @@ ML_URL = f"http://{ML_HOST}:{ML_PORT}"
 def get_mongo_collection():
     """Get MongoDB collection with proper error handling."""
     try:
-        MONGO_URI = os.getenv("CONN_STR", os.getenv("MONGO_URI", "mongodb://localhost:27017/"))
+        mongo_uri = os.getenv("CONN_STR", os.getenv("MONGO_URI", "mongodb://localhost:27017/"))
         # Extract database name from connection string if present, otherwise use default
-        if "/" in MONGO_URI and "?" not in MONGO_URI.split("/")[-1]:
+        if "/" in mongo_uri and "?" not in mongo_uri.split("/")[-1]:
             # Connection string format: mongodb://host:port/dbname
-            DB_NAME = os.getenv("DB_NAME", MONGO_URI.split("/")[-1] if "/" in MONGO_URI else "testdb")
-        elif "/" in MONGO_URI and "?" in MONGO_URI:
+            db_name = os.getenv(
+                "DB_NAME",
+                mongo_uri.split("/")[-1] if "/" in mongo_uri else "testdb"
+            )
+        elif "/" in mongo_uri and "?" in mongo_uri:
             # Connection string format: mongodb://host:port/dbname?options
-            DB_NAME = os.getenv("DB_NAME", MONGO_URI.split("/")[-1].split("?")[0] if "/" in MONGO_URI else "testdb")
+            db_name = os.getenv(
+                "DB_NAME",
+                mongo_uri.split("/")[-1].split("?")[0] if "/" in mongo_uri else "testdb"
+            )
         else:
-            DB_NAME = os.getenv("DB_NAME", "testdb")
+            db_name = os.getenv("DB_NAME", "testdb")
 
-        COLLECTION_NAME = "gestures"
+        collection_name = "gestures"
 
         # Initialize MongoDB client with connection timeout
-        mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
-        db = mongo_client[DB_NAME]
+        mongo_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+        db = mongo_client[db_name]
         # Test connection
         mongo_client.admin.command('ping')
-        return db[COLLECTION_NAME]
+        return db[collection_name]
     except Exception as exc:
         # Return None if connection fails - will be handled in routes
         print(f"MongoDB connection error: {exc}")
@@ -107,7 +113,7 @@ def create_app():
                 # Skip no_hand and unknown gestures - do nothing
                 if gesture_type in ["no_hand", "unknown", "no_image"]:
                     continue
-                
+
                 # Use emoji from database if available, otherwise map it
                 emoji = gesture.get("emoji") or mood_map.get(gesture_type, "❓")
                 formatted_gestures.append({
@@ -132,14 +138,13 @@ def create_app():
         seconds_ago = time.time() - timestamp
         if seconds_ago < 60:
             return "just now"
-        elif seconds_ago < 3600:
+        if seconds_ago < 3600:
             minutes = int(seconds_ago / 60)
             return f"{minutes}m ago"
-        elif seconds_ago < 86400:
+        if seconds_ago < 86400:
             hours = int(seconds_ago / 3600)
             return f"{hours}h ago"
-        else:
-            return "over 24h ago"
+        return "over 24h ago"
 
     @app.route("/analyze", methods=["POST"])
     def analyze():
