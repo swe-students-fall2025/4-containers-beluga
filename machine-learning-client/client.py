@@ -3,11 +3,11 @@
 import os
 import time
 import base64
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from gesture_api import analyze_image
 from mapping import map_gesture
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -96,6 +96,6 @@ def create_app():
 
 
 if __name__ == "__main__":
-    app = create_app()
+    flask_app = create_app()
     port = int(os.environ.get("PORT", 80))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    flask_app.run(host="0.0.0.0", port=port, debug=True)
