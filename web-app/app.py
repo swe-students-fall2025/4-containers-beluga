@@ -19,19 +19,24 @@ ML_URL = f"http://{ML_HOST}:{ML_PORT}"
 def get_mongo_collection():
     """Get MongoDB collection with proper error handling."""
     try:
-        mongo_uri = os.getenv("CONN_STR", os.getenv("MONGO_URI", "mongodb://localhost:27017/"))
+        mongo_uri = os.getenv(
+            "CONN_STR", os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+        )
         # Extract database name from connection string if present, otherwise use default
         if "/" in mongo_uri and "?" not in mongo_uri.split("/")[-1]:
             # Connection string format: mongodb://host:port/dbname
             db_name = os.getenv(
-                "DB_NAME",
-                mongo_uri.split("/")[-1] if "/" in mongo_uri else "testdb"
+                "DB_NAME", mongo_uri.split("/")[-1] if "/" in mongo_uri else "testdb"
             )
         elif "/" in mongo_uri and "?" in mongo_uri:
             # Connection string format: mongodb://host:port/dbname?options
             db_name = os.getenv(
                 "DB_NAME",
-                mongo_uri.split("/")[-1].split("?")[0] if "/" in mongo_uri else "testdb"
+                (
+                    mongo_uri.split("/")[-1].split("?")[0]
+                    if "/" in mongo_uri
+                    else "testdb"
+                ),
             )
         else:
             db_name = os.getenv("DB_NAME", "testdb")
@@ -42,12 +47,13 @@ def get_mongo_collection():
         mongo_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
         db = mongo_client[db_name]
         # Test connection
-        mongo_client.admin.command('ping')
+        mongo_client.admin.command("ping")
         return db[collection_name]
     except Exception as exc:
         # Return None if connection fails - will be handled in routes
         print(f"MongoDB connection error: {exc}")
         return None
+
 
 def create_app():
     """Create and configure the Flask application."""
@@ -74,11 +80,16 @@ def create_app():
         try:
             collection = get_mongo_collection()
             if collection is None:
-                return jsonify({
-                    "gestures": [],
-                    "count": 0,
-                    "error": "Database connection failed. Please check MongoDB is running."
-                }), 503
+                return (
+                    jsonify(
+                        {
+                            "gestures": [],
+                            "count": 0,
+                            "error": "Database connection failed. Please check MongoDB is running.",
+                        }
+                    ),
+                    503,
+                )
 
             # Calculate timestamp from 24 hours ago
             twenty_four_hours_ago = time.time() - (24 * 60 * 60)
@@ -91,8 +102,10 @@ def create_app():
             recent_gestures = list(
                 collection.find(
                     {"timestamp": {"$gte": twenty_four_hours_ago}},
-                    {"_id": 0}  # Exclude MongoDB _id field
-                ).sort("timestamp", -1)  # Sort by most recent first
+                    {"_id": 0},  # Exclude MongoDB _id field
+                ).sort(
+                    "timestamp", -1
+                )  # Sort by most recent first
             )
 
             # Map gestures to mood emojis (using the same mapping as in database)
@@ -116,19 +129,28 @@ def create_app():
 
                 # Use emoji from database if available, otherwise map it
                 emoji = gesture.get("emoji") or mood_map.get(gesture_type, "❓")
-                formatted_gestures.append({
-                    "emoji": emoji,
-                    "gesture": gesture_type,
-                    "mood": gesture.get("mood", "unknown"),
-                    "timestamp": gesture.get("timestamp"),
-                    "time_ago": _format_time_ago(gesture.get("timestamp", time.time())),
-                })
+                formatted_gestures.append(
+                    {
+                        "emoji": emoji,
+                        "gesture": gesture_type,
+                        "mood": gesture.get("mood", "unknown"),
+                        "timestamp": gesture.get("timestamp"),
+                        "time_ago": _format_time_ago(
+                            gesture.get("timestamp", time.time())
+                        ),
+                    }
+                )
 
-            return jsonify({
-                "gestures": formatted_gestures,
-                "count": len(formatted_gestures),
-                "message": "Whiteboard data retrieved successfully"
-            }), 200
+            return (
+                jsonify(
+                    {
+                        "gestures": formatted_gestures,
+                        "count": len(formatted_gestures),
+                        "message": "Whiteboard data retrieved successfully",
+                    }
+                ),
+                200,
+            )
 
         except Exception as exc:
             return jsonify({"error": str(exc)}), 500
@@ -189,7 +211,6 @@ def create_app():
             if "error" in result:
                 print("error: " + result["error"])
                 return jsonify({"error": result["error"]}), 500
-
 
             gesture = result.get("gesture", "unknown")
 
