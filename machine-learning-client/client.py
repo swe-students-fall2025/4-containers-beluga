@@ -1,9 +1,12 @@
 """ML-client API server for gesture recognition."""
 
+import os
 import base64
 from flask import Flask, request, jsonify
 from gesture_api import analyze_image
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def create_app():
     """Factory for creating Flask app (needed for testing)."""
@@ -51,4 +54,5 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(host="0.0.0.0", port=6000, debug=True)
+    port = int(os.environ.get("PORT", 80))
+    app.run(host="0.0.0.0", port=port, debug=True)
