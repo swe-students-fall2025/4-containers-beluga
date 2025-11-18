@@ -361,7 +361,7 @@ def test_whiteboard_api_maps_gesture_to_emoji(flask_client):
         response = flask_client.get("/api/whiteboard")
         assert response.status_code == 200
         data = response.get_json()
-        assert data["gestures"][0]["emoji"] == "😊" 
+        assert data["gestures"][0]["emoji"] == "😊"
 
 
 def test_analyze_ci_mode_invalid_base64(flask_client):
