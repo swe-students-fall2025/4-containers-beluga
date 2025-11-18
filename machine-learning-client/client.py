@@ -1,10 +1,24 @@
 """ML-client API server for gesture recognition."""
 
 import os
+import time
 import base64
 from flask import Flask, request, jsonify
+from pymongo import MongoClient
 from gesture_api import analyze_image
+from mapping import map_gesture
 from dotenv import load_dotenv
+
+load_dotenv()
+
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+DB_NAME = os.getenv("DB_NAME", "testdb")
+COLLECTION_NAME = "gestures"
+
+# Initialize MongoDB client
+client = MongoClient(MONGO_URI)
+db = client[DB_NAME]
+collection = db[COLLECTION_NAME]
 
 load_dotenv()
 
@@ -14,7 +28,7 @@ def create_app():
 
     @app.route("/analyze-image", methods=["POST"])
     def analyze_image_api():
-        """Receive base64 image, run gesture detection, return result."""
+        """Receive base64 image, run gesture detection, store to MongoDB, return result."""
         try:
             data = request.get_json()
             if not data or "image" not in data:
@@ -44,7 +58,28 @@ def create_app():
                 return jsonify({"error": f"gesture_api failure: {exc}"}), 500
 
             gesture = result.get("gesture", "unknown")
-            return jsonify({"gesture": gesture}), 200
+            score = result.get("score", 1.0)
+
+            # Map gesture to mood/emoji
+            mood, emoji = map_gesture(gesture)
+
+            # Insert into MongoDB
+            collection.insert_one({
+                "gesture": gesture,
+                "score": score,
+                "mood": mood,
+                "emoji": emoji,
+                "timestamp": time.time(),
+            })
+
+            # Return result
+            return jsonify({
+                "gesture": gesture,
+                "emoji": emoji,
+                "label": gesture,
+                "confidence": score,
+                "message": "Processed and stored successfully"
+            }), 200
 
         except Exception as exc:
             return jsonify({"error": str(exc)}), 500
