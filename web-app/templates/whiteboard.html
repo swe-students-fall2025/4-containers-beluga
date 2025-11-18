@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mood Whiteboard - Beluga</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Global styles -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <!-- Whiteboard-specific styles -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='whiteboard.css') }}"
+    />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="container">
+        <div class="nav-brand">Beluga</div>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/camera">Camera</a></li>
+          <li><a href="/whiteboard">Whiteboard</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section class="whiteboard-container">
+      <div class="container">
+        <div class="whiteboard-header">
+          <h1 class="whiteboard-title">🎨 Mood Whiteboard</h1>
+          <p class="whiteboard-subtitle">
+            A wall of moods from the last 24 hours. Share your mood and see
+            how others are feeling today!
+          </p>
+          <div class="whiteboard-stats">
+            <span id="mood-count" class="stat-count">0 moods</span>
+          </div>
+        </div>
+
+        <!-- Loading state -->
+        <div id="loading" class="loading-message">
+          <div class="spinner"></div>
+          <p>Loading moods...</p>
+        </div>
+
+        <!-- Empty state -->
+        <div id="empty-state" class="empty-state hidden">
+          <div class="empty-icon">🎭</div>
+          <h2>No moods yet today!</h2>
+          <p>Be the first to share your mood using the camera.</p>
+          <a href="/camera" class="btn btn-primary">Share Your Mood</a>
+        </div>
+
+        <!-- Mood wall grid -->
+        <div id="mood-wall" class="mood-wall hidden">
+          <!-- Mood emojis will be dynamically inserted here -->
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const moodWall = document.getElementById("mood-wall");
+      const loadingDiv = document.getElementById("loading");
+      const emptyState = document.getElementById("empty-state");
+      const moodCount = document.getElementById("mood-count");
+
+      // Fetch and display whiteboard data
+      async function loadWhiteboard() {
+        try {
+          const response = await fetch("/api/whiteboard");
+          const data = await response.json();
+
+          // Hide loading
+          loadingDiv.classList.add("hidden");
+
+          // Check for database connection error
+          if (data.error || !response.ok) {
+            emptyState.classList.add("hidden");
+            moodWall.classList.remove("hidden");
+            moodWall.innerHTML = `
+              <div class="error-message">
+                <p>⚠️ ${data.error || "Failed to load whiteboard"}</p>
+                <p style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.8;">
+                  Make sure MongoDB is running and accessible.
+                </p>
+                <button onclick="loadWhiteboard()" class="btn btn-primary" style="margin-top: 1rem;">Retry</button>
+              </div>
+            `;
+            moodCount.textContent = "Connection error";
+            return;
+          }
+
+          // Update count
+          const count = data.count || 0;
+          moodCount.textContent = `${count} ${count === 1 ? "mood" : "moods"}`;
+
+          // Show empty state if no moods
+          if (count === 0) {
+            emptyState.classList.remove("hidden");
+            moodWall.classList.add("hidden");
+            return;
+          }
+
+          // Show mood wall
+          emptyState.classList.add("hidden");
+          moodWall.classList.remove("hidden");
+
+          // Clear existing moods
+          moodWall.innerHTML = "";
+
+          // Get whiteboard dimensions for random positioning
+          const padding = 64; // 4rem = 64px
+          const whiteboardWidth = moodWall.offsetWidth - padding; // Account for padding
+          const whiteboardHeight = Math.max(600, moodWall.offsetHeight - padding);
+          const emojiSize = 80; // Approximate size of emoji + spacing
+
+          // Track used positions to avoid overlaps
+          const usedPositions = [];
+
+          // Add each mood to the wall with random positioning
+          data.gestures.forEach((gesture, index) => {
+            const moodItem = document.createElement("div");
+            moodItem.className = "mood-item";
+            moodItem.setAttribute("data-mood", gesture.mood);
+            moodItem.setAttribute("data-gesture", gesture.gesture);
+
+            // Create emoji display
+            const emoji = document.createElement("div");
+            emoji.className = "mood-emoji";
+            emoji.textContent = gesture.emoji;
+            emoji.setAttribute("title", `${gesture.gesture} - ${gesture.mood}`);
+
+            // Create time indicator
+            const timeInfo = document.createElement("div");
+            timeInfo.className = "mood-time";
+            timeInfo.textContent = gesture.time_ago;
+
+            moodItem.appendChild(emoji);
+            moodItem.appendChild(timeInfo);
+
+            // Random position with collision detection
+            let attempts = 0;
+            let x, y, position;
+            do {
+              x = Math.random() * (whiteboardWidth - emojiSize);
+              y = Math.random() * (whiteboardHeight - emojiSize);
+              position = { x, y };
+              attempts++;
+            } while (
+              attempts < 50 &&
+              usedPositions.some(
+                (used) =>
+                  Math.abs(used.x - x) < emojiSize &&
+                  Math.abs(used.y - y) < emojiSize
+              )
+            );
+
+            usedPositions.push(position);
+
+            // Set random position and slight rotation
+            moodItem.style.left = `${x}px`;
+            moodItem.style.top = `${y}px`;
+            moodItem.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg)`;
+
+            moodWall.appendChild(moodItem);
+          });
+        } catch (error) {
+          console.error("Error loading whiteboard:", error);
+          loadingDiv.classList.add("hidden");
+          emptyState.classList.add("hidden");
+          moodWall.classList.remove("hidden");
+          moodWall.innerHTML = `
+            <div class="error-message">
+              <p>⚠️ Error loading whiteboard: ${error.message}</p>
+              <button onclick="loadWhiteboard()" class="btn btn-primary">Retry</button>
+            </div>
+          `;
+          moodCount.textContent = "Error";
+        }
+      }
+
+      // Load whiteboard on page load
+      loadWhiteboard();
+
+      // Refresh every 5 seconds
+      setInterval(loadWhiteboard, 5000);
+    </script>
+  </body>
+</html>
+
