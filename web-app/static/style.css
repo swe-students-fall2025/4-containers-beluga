@@ -64,8 +64,8 @@ body {
 
 /* Hero Section */
 .hero {
-  background: linear-gradient(to bottom, #e6f3ff 0%, #b3d9ff 100%);
-  color: #2c3e50;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  color: #ffffff;
   padding: 8rem 0;
   text-align: center;
 }
@@ -79,13 +79,13 @@ body {
   font-size: 3.5rem;
   margin-bottom: 1.5rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .hero-subtitle {
   font-size: 1.25rem;
   margin-bottom: 2.5rem;
-  color: #5a6c7d;
+  color: #f0f0f0;
 }
 
 .hero-buttons {
