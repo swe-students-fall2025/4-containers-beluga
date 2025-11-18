@@ -38,8 +38,6 @@
           </p>
           <div class="whiteboard-stats">
             <span id="mood-count" class="stat-count">0 moods</span>
-            <span class="stat-separator">•</span>
-            <span class="stat-info">Refreshes every 5 seconds</span>
           </div>
         </div>
 
@@ -114,8 +112,17 @@
           // Clear existing moods
           moodWall.innerHTML = "";
 
-          // Add each mood to the wall
-          data.gestures.forEach((gesture) => {
+          // Get whiteboard dimensions for random positioning
+          const padding = 64; // 4rem = 64px
+          const whiteboardWidth = moodWall.offsetWidth - padding; // Account for padding
+          const whiteboardHeight = Math.max(600, moodWall.offsetHeight - padding);
+          const emojiSize = 80; // Approximate size of emoji + spacing
+
+          // Track used positions to avoid overlaps
+          const usedPositions = [];
+
+          // Add each mood to the wall with random positioning
+          data.gestures.forEach((gesture, index) => {
             const moodItem = document.createElement("div");
             moodItem.className = "mood-item";
             moodItem.setAttribute("data-mood", gesture.mood);
@@ -134,6 +141,31 @@
 
             moodItem.appendChild(emoji);
             moodItem.appendChild(timeInfo);
+
+            // Random position with collision detection
+            let attempts = 0;
+            let x, y, position;
+            do {
+              x = Math.random() * (whiteboardWidth - emojiSize);
+              y = Math.random() * (whiteboardHeight - emojiSize);
+              position = { x, y };
+              attempts++;
+            } while (
+              attempts < 50 &&
+              usedPositions.some(
+                (used) =>
+                  Math.abs(used.x - x) < emojiSize &&
+                  Math.abs(used.y - y) < emojiSize
+              )
+            );
+
+            usedPositions.push(position);
+
+            // Set random position and slight rotation
+            moodItem.style.left = `${x}px`;
+            moodItem.style.top = `${y}px`;
+            moodItem.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg)`;
+
             moodWall.appendChild(moodItem);
           });
         } catch (error) {

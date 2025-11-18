@@ -3,7 +3,7 @@
 .whiteboard-container {
   padding: 3rem 0;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+  background: #f0f0f0;
 }
 
 .whiteboard-header {
@@ -108,97 +108,93 @@
   margin-bottom: 2rem;
 }
 
-/* Mood Wall Grid */
+/* Whiteboard Surface */
 .mood-wall {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 1.5rem;
-  padding: 2rem 0;
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  max-width: 1200px;
+  margin: 2rem auto;
+  background: linear-gradient(to bottom, #f5f5dc 0%, #e8e8d3 100%);
+  border: 8px solid #8b7355;
+  border-radius: 4px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1), 0 10px 40px rgba(0, 0, 0, 0.3);
+  padding: 2rem;
+  overflow: hidden;
   animation: fadeIn 0.5s ease-in;
+  /* Whiteboard texture */
+  background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    );
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
-/* Mood Item */
+/* Mood Item - Randomly positioned on whiteboard */
 .mood-item {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem 1rem;
+  position: absolute;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  animation: appearOnBoard 0.5s ease-out;
+  z-index: 1;
 }
 
-.mood-item::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #4a90e2, #b3d9ff);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
+@keyframes appearOnBoard {
+  from {
+    opacity: 0;
+    transform: scale(0) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .mood-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: scale(1.2) rotate(5deg) !important;
+  z-index: 10;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
-.mood-item:hover::before {
-  transform: scaleX(1);
-}
-
-.mood-item[data-mood="happy"]:hover {
-  background: linear-gradient(135deg, #fff9e6 0%, #fff 100%);
-}
-
-.mood-item[data-mood="sad"]:hover {
-  background: linear-gradient(135deg, #e6f3ff 0%, #fff 100%);
-}
-
-.mood-item[data-mood="relaxed"]:hover {
-  background: linear-gradient(135deg, #f0fff4 0%, #fff 100%);
-}
-
-.mood-item[data-mood="neutral"]:hover {
-  background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
-}
-
-.mood-item[data-mood="stressed"]:hover {
-  background: linear-gradient(135deg, #fff0f0 0%, #fff 100%);
-}
-
-/* Emoji Display */
+/* Emoji Display - Larger, more prominent */
 .mood-emoji {
-  font-size: 3.5rem;
+  font-size: 4rem;
   line-height: 1;
-  margin-bottom: 0.75rem;
-  transition: transform 0.3s ease;
+  display: block;
+  transition: transform 0.2s ease;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .mood-item:hover .mood-emoji {
-  transform: scale(1.15) rotate(5deg);
+  transform: scale(1.1);
 }
 
-/* Time Info */
+/* Time Info - Smaller, subtle */
 .mood-time {
-  font-size: 0.75rem;
-  color: #8a9ba8;
+  font-size: 0.65rem;
+  color: #666;
   font-weight: 500;
+  margin-top: 0.25rem;
+  opacity: 0.7;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -243,30 +239,26 @@
   }
 
   .mood-wall {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 1rem;
-  }
-
-  .mood-item {
-    padding: 1rem 0.5rem;
+    min-height: 500px;
+    padding: 1.5rem;
   }
 
   .mood-emoji {
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 }
 
 @media (max-width: 480px) {
   .mood-wall {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 0.75rem;
+    min-height: 400px;
+    padding: 1rem;
   }
 
   .mood-emoji {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 
   .mood-time {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
   }
 }
