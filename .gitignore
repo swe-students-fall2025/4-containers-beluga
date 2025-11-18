@@ -150,4 +150,4 @@ cython_debug/
 
 
 # photo
-.jpg
+*.jpg
