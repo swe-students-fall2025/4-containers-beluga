@@ -75,6 +75,15 @@
           >
             Send to Whiteboard
           </button>
+
+          <a
+            id="goToWhiteboardBtn"
+            href="/whiteboard"
+            class="btn btn-primary hidden"
+            style="text-decoration: none;"
+          >
+            Go to Whiteboard
+          </a>
         </div>
 
         <!-- Status / result text -->
@@ -88,10 +97,14 @@
       const captureBtn = document.getElementById('captureBtn');
       const sendBtn = document.getElementById('sendBtn');
       const retakeBtn = document.getElementById('retakeBtn');
+      const goToWhiteboardBtn = document.getElementById('goToWhiteboardBtn');
       const resultDiv = document.getElementById('result');
       const previewImage = document.getElementById('previewImage');
 
       let lastCaptureDataUrl = null;
+
+      // Ensure "Go to Whiteboard" button is hidden on page load
+      goToWhiteboardBtn.style.display = 'none';
 
       async function initCamera() {
         try {
@@ -124,6 +137,7 @@
         captureBtn.classList.add('hidden');
         retakeBtn.classList.remove('hidden');
         sendBtn.classList.remove('hidden');
+        goToWhiteboardBtn.style.display = 'none';
 
         resultDiv.textContent =
           'Photo captured. You can now send it to the whiteboard or retake.';
@@ -142,6 +156,7 @@
         captureBtn.classList.remove('hidden');
         retakeBtn.classList.add('hidden');
         sendBtn.classList.add('hidden');
+        goToWhiteboardBtn.style.display = 'none';
 
         resultDiv.textContent = 'Photo discarded. Take a new photo.';
       }
@@ -172,7 +187,11 @@
           }
 
           resultDiv.textContent =
-            `Result: ${data.emoji} (${data.gesture})`;
+            `Result: ${data.emoji} (${data.gesture}) - Mood sent to whiteboard!`;
+          
+          // Hide send button, show "Go to Whiteboard" button
+          sendBtn.classList.add('hidden');
+          goToWhiteboardBtn.style.display = 'inline-block';
         } catch (err) {
           console.error(err);
           resultDiv.textContent = 'Error contacting server.';
