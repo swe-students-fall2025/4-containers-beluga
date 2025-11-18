@@ -204,8 +204,6 @@ def test_whiteboard_api_exception(flask_client):
         assert "error" in data
 
 
-
-
 def test_analyze_with_ml_server_unknown_gesture(flask_client):
     """Test analyze route with unknown gesture from ML server."""
     base64_image = (
@@ -226,9 +224,6 @@ def test_analyze_with_ml_server_unknown_gesture(flask_client):
             data = response.get_json()
             assert data["gesture"] == "unknown_gesture"
             assert data["emoji"] == "❓"
-
-
-
 
 
 def test_format_time_ago_just_now(flask_client):
@@ -325,7 +320,7 @@ def test_whiteboard_api_uses_emoji_from_db(flask_client):
     mock_gestures = [
         {
             "gesture": "thumbs_up",
-            "emoji": "👍",  
+            "emoji": "👍",
             "mood": "happy",
             "timestamp": current_time - 3600,
         }
