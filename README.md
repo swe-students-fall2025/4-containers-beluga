@@ -6,6 +6,18 @@
 
 Build a containerized app that uses machine learning. See [instructions](./instructions.md) for details.
 
+## Team Members
+[JunHao Chen](https://github.com/JunHaoChen16)
+
+[Xiaomin Liu](https://github.com/xl4624)
+
+[YI-KAI Huang](https://github.com/DplayerXAX)
+
+[Coco Liu](https://github.com/yiminliu2004)
+
+[David](https://github.com/SnazzyBeatle115)
+
+
 ## Quick Start with Docker Compose
 
 To run all services together:
