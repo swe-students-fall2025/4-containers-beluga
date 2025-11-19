@@ -4,7 +4,7 @@
 
 # Containerized App Exercise
 
-Build a containerized app that uses machine learning. See [instructions](./instructions.md) for details.
+This project is a fully containerized system that combines a Python-based web application, a machine‑learning inference client, and a MongoDB database. The webapp allows users to take a picture with a gesture, which will be identified by the ML Model. Then they can add their identified emotion to the whiteboard.
 
 ## Team Members
 [JunHao Chen](https://github.com/JunHaoChen16)
@@ -19,6 +19,13 @@ Build a containerized app that uses machine learning. See [instructions](./instr
 
 
 ## Quick Start with Docker Compose
+Works on all systems compatible with Docker Desktop. Make sure you have Docker Desktop installed.
+
+Clone the repo:
+```bash
+git clone https://github.com/swe-students-fall2025/4-containers-beluga.git
+cd 4-containers-beluga
+```
 
 To run all services together:
 
@@ -27,6 +34,7 @@ To run all services together:
 cp env.example .env
 
 # Edit .env file with your configuration if needed
+# You may keep the defaults for local development.
 
 # Start all services
 docker compose up --build
@@ -39,6 +47,8 @@ This will start:
 - MongoDB database
 - Web application
 - Machine Learning client
+
+You can access the webapp at `localhost:5000`, or whatever port you set in `.env`.
 
 ## MongoDB
 
@@ -74,6 +84,13 @@ pipenv run pytest --cov=. --cov-report=html  # Run tests with coverage
 ```
 
 ## Environment Variables
+| Variable        | Default | Description                              |
+|-----------------|---------|------------------------------------------|
+| MONGO_USERNAME  | user    | MongoDB username for authentication      |
+| MONGO_PASSWORD  | pass    | MongoDB password for authentication      |
+| WEBAPP_PORT     | 5000    | Port exposed by the web application      |
+| MLCLIENT_PORT   | 80      | Port exposed by the machine learning client |
+| MONGODB_PORT    | 27017   | Port used by MongoDB                     |
 
-- `MONGO_URI`: MongoDB connection string (default: `mongodb://localhost:27017/`)
-- `DB_NAME`: Database name (default: `testdb`)
+
+
