@@ -1,5 +1,6 @@
 """Tests for ML client Flask API."""
 
+# pylint: disable=redefined-outer-name
 from unittest.mock import patch
 import pytest
 from client import create_app
