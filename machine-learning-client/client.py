@@ -44,7 +44,7 @@ def create_app():
             # Decode base64 → bytes
             try:
                 img_bytes = base64.b64decode(image_data)
-            except Exception as exc:
+            except (ValueError) as exc:
                 print(exc)
                 return jsonify({"error": "Invalid base64"}), 500
 
@@ -56,7 +56,7 @@ def create_app():
             # Call gesture recognizer
             try:
                 result = analyze_image(temp_path)
-            except Exception as exc:
+            except (RuntimeError) as exc:
                 print(exc)
                 return jsonify({"error": f"gesture_api failure: {exc}"}), 500
 

@@ -14,12 +14,12 @@ mp_hands = mp.solutions.hands.Hands(static_image_mode=True)
 # Utility functions
 # --------------------------
 
-"""
-    Debug print hand landmarks
-"""
 
 
 def debug_landmarks(lm):
+    """
+    Debug print hand landmarks
+    """
     pprint.pprint(
         {
             "thumb": (lm[4].y, lm[2].y),
@@ -32,16 +32,21 @@ def debug_landmarks(lm):
 
 
 def is_extended(tip, pip):
-    """Finger is extended if tip is clearly higher (smaller y) than pip."""
+    """
+    Finger is extended if tip is clearly higher (smaller y) than pip.
+    """
     return tip.y < pip.y - 0.04
 
-
 def is_folded(tip, pip):
-    """Finger is folded if tip is not above pip."""
+    """
+    Finger is folded if tip is not above pip.
+    """
     return tip.y > pip.y - 0.01
 
-
 def distance(a, b):
+    """
+    Calculate distance mathmatically.
+    """
     return math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2)
 
 
@@ -49,8 +54,10 @@ def distance(a, b):
 # Gesture Recognition
 # --------------------------
 
-
 def analyze_image(image_path):
+    """
+    Analyze the image and identify gesture.
+    """
     image = cv2.imread(image_path)
     if image is None:
         return {"gesture": "no_image"}
