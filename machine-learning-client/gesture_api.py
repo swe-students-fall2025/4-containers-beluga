@@ -1,6 +1,7 @@
 """
 Identify gestures module
 """
+
 import math
 import pprint
 import cv2
@@ -16,6 +17,8 @@ mp_hands = mp.solutions.hands.Hands(static_image_mode=True)
 """
     Debug print hand landmarks
 """
+
+
 def debug_landmarks(lm):
     pprint.pprint(
         {
