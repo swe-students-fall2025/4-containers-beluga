@@ -22,6 +22,7 @@ collection = db[COLLECTION_NAME]
 
 load_dotenv()
 
+
 def create_app():
     """Factory for creating Flask app (needed for testing)."""
     app = Flask(__name__)
@@ -66,24 +67,29 @@ def create_app():
             mood, emoji = map_gesture(gesture)
 
             # Insert into MongoDB
-            collection.insert_one({
-                "gesture": gesture,
-                "score": score,
-                "mood": mood,
-                "emoji": emoji,
-                "timestamp": time.time(),
-            })
-
-
+            collection.insert_one(
+                {
+                    "gesture": gesture,
+                    "score": score,
+                    "mood": mood,
+                    "emoji": emoji,
+                    "timestamp": time.time(),
+                }
+            )
 
             # Return result
-            return jsonify({
-                "gesture": gesture,
-                "emoji": emoji,
-                "label": gesture,
-                "confidence": score,
-                "message": "Processed and stored successfully"
-            }), 200
+            return (
+                jsonify(
+                    {
+                        "gesture": gesture,
+                        "emoji": emoji,
+                        "label": gesture,
+                        "confidence": score,
+                        "message": "Processed and stored successfully",
+                    }
+                ),
+                200,
+            )
 
         except Exception as exc:
             # Debug prints
