@@ -6,7 +6,7 @@ GESTURE_MAP = {
     "victory": ("relaxed", "😎"),
     "open_palm": ("neutral", "🙂"),
     "fist": ("stressed", "😤"),
-    "ok": ("content", "😊"),
+    "ok": ("content", "😼"),
     "point": ("curious", "🤔"),
 }
 
