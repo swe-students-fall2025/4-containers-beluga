@@ -52,3 +52,32 @@ def test_thumb_up():
             with patch("gesture_api.mp_hands.process", return_value=mock_results):
                 result = gesture_api.analyze_image("x")
                 assert result["gesture"] == "thumbs_up"
+
+
+def test_open_palm():
+    """All fingers extended → open_palm."""
+    fake_img = MagicMock()
+
+    fake_lm = [MagicMock() for _ in range(21)]
+    for lm in fake_lm:
+        lm.x = 0.5
+        lm.z = 0.0
+
+    # PIP = 0.5, TIP = 0.40 → extended
+    for pip in [6, 10, 14, 18]:
+        fake_lm[pip].y = 0.50
+    for tip in [8, 12, 16, 20]:
+        fake_lm[tip].y = 0.40
+
+    # Thumb not up/down
+    fake_lm[4].y = 0.5
+    fake_lm[2].y = 0.5
+
+    mock_results = MagicMock()
+    mock_results.multi_hand_landmarks = [MagicMock(landmark=fake_lm)]
+
+    with patch("gesture_api.cv2.imread", return_value=fake_img):
+        with patch("gesture_api.cv2.cvtColor", return_value=fake_img):
+            with patch("gesture_api.mp_hands.process", return_value=mock_results):
+                result = gesture_api.analyze_image("x")
+                assert result["gesture"] == "open_palm"
