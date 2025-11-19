@@ -55,32 +55,33 @@
 
         <!-- Button row: changes after capture -->
         <div class="camera-buttons">
-          <button id="captureBtn" class="btn btn-primary">
-            Take Photo
-          </button>
+            <button id="captureBtn" class="btn btn-primary">
+                Take Photo
+            </button>
+            <button id="uploadBtn" class="btn btn-secondary">
+                Upload Image
+            </button>
 
-          <button
-            id="retakeBtn"
-            class="btn btn-secondary hidden"
-          >
-            Discard &amp; Retake
-          </button>
+            <input type="file"
+                   id="uploadInput"
+                   accept="image/*"
+                   class="hidden" />
+            <button id="retakeBtn"
+                    class="btn btn-secondary hidden">
+                Discard &amp; Retake
+            </button>
 
-          <button
-            id="sendBtn"
-            class="btn btn-primary hidden"
-          >
-            Send to Whiteboard
-          </button>
+            <button id="sendBtn"
+                    class="btn btn-primary hidden">
+                Send to Whiteboard
+            </button>
 
-          <a
-            id="goToWhiteboardBtn"
-            href="/whiteboard"
-            class="btn btn-primary hidden"
-            style="text-decoration: none;"
-          >
-            Go to Whiteboard
-          </a>
+            <a id="goToWhiteboardBtn"
+               href="/whiteboard"
+               class="btn btn-primary hidden"
+               style="text-decoration: none;">
+                Go to Whiteboard
+            </a>
         </div>
 
         <!-- Status / result text -->
@@ -97,8 +98,39 @@
       const goToWhiteboardBtn = document.getElementById('goToWhiteboardBtn');
       const resultDiv = document.getElementById('result');
       const previewImage = document.getElementById('previewImage');
-
+      const uploadBtn = document.getElementById("uploadBtn");
+      const uploadInput = document.getElementById("uploadInput");
       let lastCaptureDataUrl = null;
+
+        uploadBtn.addEventListener("click", () => {
+            uploadInput.click();
+        });
+
+        uploadInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const dataUrl = e.target.result;
+                lastCaptureDataUrl = dataUrl;
+
+                video.classList.add("hidden");
+                previewImage.src = dataUrl;
+                previewImage.classList.remove("hidden");
+
+                captureBtn.classList.add("hidden");
+                retakeBtn.classList.remove("hidden");
+                sendBtn.classList.remove("hidden");
+                goToWhiteboardBtn.style.display = "none";
+
+                resultDiv.textContent =
+                    "Image uploaded. You can send it to the whiteboard.";
+            };
+
+            reader.readAsDataURL(file);
+        });
+
 
       // Ensure "Go to Whiteboard" button is hidden on page load
       goToWhiteboardBtn.style.display = 'none';
