@@ -6,28 +6,28 @@ from client import create_app
 
 
 @pytest.fixture
-def client_app():
+def api_client():
     """Create Flask test client."""
     app = create_app()
     app.config["TESTING"] = True
     return app.test_client()
 
 
-def test_no_image(client_app):
+def test_no_image(api_client):
     """Should return 400 when 'image' field missing."""
-    response = client_app.post("/analyze-image", json={})
+    response = api_client.post("/analyze-image", json={})
     assert response.status_code == 400
 
 
-def test_invalid_base64(client_app):
+def test_invalid_base64(api_client):
     """Invalid base64 should return 500."""
-    response = client_app.post("/analyze-image", json={"image": "not_base64!!"})
+    response = api_client.post("/analyze-image", json={"image": "not_base64!!"})
     assert response.status_code == 500
 
 
 @patch("client.collection.insert_one")
 @patch("client.analyze_image")
-def test_valid_image(mock_analyze, mock_insert, client_app):
+def test_valid_image(mock_analyze, mock_insert, api_client):
     """Valid base64 and mocked analyze_image should return 200."""
     mock_analyze.return_value = {"gesture": "thumbs_up", "score": 0.9}
 
@@ -36,7 +36,7 @@ def test_valid_image(mock_analyze, mock_insert, client_app):
         "ASsJTYQAAAAASUVORK5CYII="
     )
 
-    response = client_app.post(
+    response = api_client.post(
         "/analyze-image",
         json={"image": tiny_png},
         content_type="application/json",
@@ -50,7 +50,7 @@ def test_valid_image(mock_analyze, mock_insert, client_app):
 
 @patch("client.collection.insert_one")
 @patch("client.analyze_image")
-def test_data_url_prefix(mock_analyze, mock_insert, client_app):
+def test_data_url_prefix(mock_analyze, mock_insert, api_client):
     """Handles 'data:image/jpeg;base64,' prefix correctly."""
     mock_analyze.return_value = {"gesture": "fist", "score": 1.0}
 
@@ -60,10 +60,7 @@ def test_data_url_prefix(mock_analyze, mock_insert, client_app):
         "ASsJTYQAAAAASUVORK5CYII="
     )
 
-    response = client_app.post(
-        "/analyze-image",
-        json={"image": sample_base64},
-    )
+    response = api_client.post("/analyze-image", json={"image": sample_base64})
 
     assert response.status_code == 200
     assert response.json["gesture"] == "fist"
