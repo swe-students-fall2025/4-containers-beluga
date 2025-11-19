@@ -34,18 +34,15 @@
 
         <!-- Frame area: shows either live video OR captured photo -->
         <div class="camera-frame">
-          <video
-            id="video"
-            class="camera-video"
-            autoplay
-            playsinline
-          ></video>
+            <video id="video"
+                   class="camera-video"
+                   autoplay
+                   playsinline></video>
 
-          <img
-            id="previewImage"
-            class="camera-preview hidden"
-            alt="Captured photo"
-          />
+            <img id="previewImage"
+                 class="camera-preview hidden"
+                 alt="Captured photo" />
+            <div id="cameraLoading" class="camera-loading">Loading camera...</div>
         </div>
 
         <!-- Hidden canvas used only for grabbing a frame -->
@@ -105,16 +102,21 @@
 
       // Ensure "Go to Whiteboard" button is hidden on page load
       goToWhiteboardBtn.style.display = 'none';
+        const cameraLoading = document.getElementById('cameraLoading');
 
-      async function initCamera() {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          video.srcObject = stream;
-        } catch (err) {
-          console.error('Error accessing camera:', err);
-          resultDiv.textContent = 'Could not access camera.';
+        async function initCamera() {
+            try {
+                cameraLoading.classList.remove('hidden'); 
+
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+
+                cameraLoading.classList.add('hidden'); 
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                cameraLoading.textContent = 'Camera unavailable or permission denied.';
+            }
         }
-      }
 
       // 1) Take photo: freeze frame and switch view to the captured image
       function capturePhoto() {
